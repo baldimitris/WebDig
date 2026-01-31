@@ -1,7 +1,7 @@
 # WebDig
 WebDig is a software tool for post-processing and publishing data produced by archaeologic excavations. The tool is a web-app which presents the data on a map of the excavation site. It allows the users to preview, edit and categorize the data.
 
-# Getting Started instructions
+## Getting Started instructions
 1. Copy all the files to your web server.
 2. Visit the web server through a web browser.
 3. Login as user 'admin', using password 'admin'.
