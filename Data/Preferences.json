@@ -1,0 +1,896 @@
+{
+  "DefaultTrench": "All"
+  ,
+  "EditableItemFields": [
+	{
+		"Type": "",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Photographer" ]
+	},
+	{
+		"Type": "Context",
+		"FieldNames": ["Title", "Description", "Source", "Square", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Photographer" ]
+	},
+	{
+		"Type": "Feature",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Photographer" ]
+	},
+	{
+		"Type": "Artifact",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Museum Reg. Num.", "Photographer" ]
+	},
+	{
+		"Type": "Coin",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "IssueAuthority", "Region", "Obverse", "Reverse", "Inscription", "Fabric", "Denomination", "Diameter", "CoinWeight", "Axis", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Museum Reg. Num.", "Photographer" ]
+	},
+	{
+		"Type": "Bone",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Museum Reg. Num.", "Photographer" ]
+	},
+	{
+		"Type": "Ceramics",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Museum Reg. Num.", "Photographer" ]
+	},
+	{
+		"Type": "Shell",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Museum Reg. Num.", "Photographer" ]
+	},
+	{
+		"Type": "Soil",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Photographer" ]
+	},
+	{
+		"Type": "HandPicked",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Museum Reg. Num.", "Photographer" ]
+	},
+	{
+		"Type": "Image",
+		"FieldNames": ["Title", "Description", "Source", "Modifier", "Subcategory", "Color", "Hue", "Boundary", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "IssueAuthority", "Obverse", "Reverse", "Fabric", "FormatImage", "ArtifactDate", "Dimensions", "Comparanda", "Bibliography", "Additional bibliography", "Notes", "Photographer" ]
+	}
+  ]  
+  ,	
+  "VisibleItemFields": [
+	{
+		"Type": "",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "Source", "Square", "Description", "RelationIncludesUUID", "Boundary", "Modifier", "Hue", "Color", "Sorting", "Sieve", "Identifier", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "Creator", "Origin", "IssueAuthority", "Obverse", "Reverse", "Fabric", "CoverageArea", "Category", "Subcategory", "Notes", "Photographer", "Data Owner", "Data License" ]
+	},
+	{
+		"Type": "Context",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "Source", "Square", "Description", "RelationIncludesUUID", "Boundary", "Modifier", "Hue", "Color", "Sorting", "Sieve", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "CoverageArea", "RelationIsAboveUUID", "RelationIsBelowUUID", "Notes", "Photographer", "Data Owner", "Data License" ]
+	},
+	{
+		"Type": "Feature",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "Source", "Square", "Description", "Dimensions", "Materials", "RelationIncludesUUID", "RelationIsAboveUUID", "RelationIsBelowUUID", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "CoverageArea", "Notes", "Photographer", "Data Owner", "Data License" ]
+	},
+	{
+		"Type": "Artifact",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "RelationBelongsToUUID", "Source", "Square", "Dimensions", "ArtifactDate", "Description", "Comparanda", "CoverageTemporal", "CoverageEarliest", "CoverageLatest",  "CoverageArea", "Additional bibliography", "Notes", "Photographer", "Data Owner", "Data License" ]
+	},
+	{
+		"Type": "Coin",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "RelationBelongsToUUID", "Source", "Square", "CoverageArea", "IssueAuthority", "Region", "ArtifactDate", "Obverse", "Reverse", "Inscription", "Fabric", "Denomination", "Diameter", "CoinWeight", "Axis", "Bibliography", "Notes", "Museum Reg. Num.", "Photographer", "Data Owner", "Data License"]
+	},
+	{
+		"Type": "Bone",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "RelationBelongsToUUID", "Source", "Square", "CoverageArea", "ArtifactDate", "BoneFreshBreaksPercent", "BoneBags", "BoneNumberOfSpecimens", "BoneSource", "BoneWeight", "BoneSpecies", "BoneInterpretationOfContext", "BoneSpeciesNotes", "BoneTaphonomyNotes", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "CoverageArea", "Notes", "Photographer", "Data Owner", "Data License"]
+	},
+	{
+		"Type": "Ceramics",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "RelationBelongsToUUID", "Source", "Square", "CoverageArea", "ArtifactDate", "Description", "TotalWeight", "FineWareWeight", "CookWareWeight", "TileWeight", "AmphoraToes", "AmphoraLids", "CoarseWareWeight", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "CoverageArea", "Notes", "Photographer", "Data Owner", "Data License"]
+	},
+	{
+		"Type": "Shell",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "RelationBelongsToUUID", "Source", "Square", "CoverageArea", "ArtifactDate", "Description", "TotalWeight", "FineWareWeight", "Hue", "Color", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "CoverageArea", "Notes", "Photographer", "Data Owner", "Data License"]
+	},
+	{
+		"Type": "Soil",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "RelationBelongsToUUID", "Source", "Square", "CoverageArea", "ArtifactDate", "Description", "Hue", "Color", "Boundary", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "CoverageArea", "Notes", "Photographer", "Data Owner", "Data License"]
+	},
+	{
+		"Type": "HandPicked",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "RelationBelongsToUUID", "Source", "Square", "CoverageArea", "ArtifactDate", "Description", "Hue", "Color", "Boundary", "CoverageTemporal", "CoverageEarliest", "CoverageLatest", "CoverageArea", "Notes", "Photographer", "Data Owner", "Data License"]
+	},
+	{
+		"Type": "Image",
+		"FieldNames": [ "Identifier", "Title", "Category", "Subcategory", "RelationBelongsToUUID", "Source", "ArtifactDate", "Description", "Notes", "Data Owner", "Data License" ]
+	}
+  ]  
+  ,
+  "fields" : [
+	{
+      "field" : "ArtifactDate",
+      "valuelist" : [
+        "511 BC",
+        "500 BC",
+        "444 BC",
+		"400-350 BC",
+		"375-350 BC",
+		"350-300 BC",
+		"500-480 BC",
+		"450-430 BC",
+		"377-365 BC",
+		"365-330 BC",
+		"After 280 BC"
+      ]
+    },
+	{
+      "field" : "ArtifactDatedBy",
+      "valuelist" : [
+        "Context",
+        "Comparanda"
+      ]
+    },
+    {
+      "field" : "ArchiveNumber",
+      "labels" : {
+        "el" : "# Καταγραφής",
+        "en" : "Archive #"
+      }
+    },
+    {
+      "field" : "BelowOther",
+      "labels" : {
+        "el" : "κάτω από",
+        "en" : "below other"
+      }
+    },
+    {
+      "field" : "By",
+      "labels" : {
+        "en" : "dated by"
+      },
+      "valuelist" : [
+        "Pottery",
+        "Coin",
+        "Stratigraphy",
+        "Find",
+        "Other"
+      ]
+    },
+    {
+      "field" : "Zembilis",
+      "labels" : {
+        "el" : "κουβάδες",
+        "en" : "zembilis (#)"
+      }
+    },
+    {
+      "field" : "Category", 
+      "labels" : {
+        "el" : "κατηγορία",
+        "en" : "category"
+      }
+    },
+	{
+      "field" : "Subcategory", 
+      "labels" : {
+        "el" : "Υποκατηγορία",
+        "en" : "Subcategory"
+      }
+    },
+    {
+      "field" : "Contents",
+      "labels" : {
+        "el" : "περιεχόμενα",
+        "en" : "contents"
+      },
+      "multiline" : true
+    },
+    {
+      "field" : "Context",
+      "labels" : {
+        "el" : "στρωμ. ενότητα",
+        "en" : "context"
+      },
+      "valuelist" : [
+
+      ]
+    },
+    {
+      "multitype" : true,
+      "multivalue" : true,
+      "valuelist" : [
+
+      ],
+      "field" : "Contributor",
+      "labels" : {
+        "el" : "ανασκαφείς",
+        "en" : "excavators"
+      }
+    },
+    {
+      "field" : "CoverageEarliest",
+	  "datatype": "integer",
+      "labels" : {
+        "el" : "έναρξη χρονολ.",
+        "en" : "chron. start"
+      }
+    },
+    {
+      "field" : "CoverageLatest",
+	  "datatype": "integer",
+      "labels" : {
+        "el" : "τέλος χρονολ.",
+        "en" : "chron. end"
+      }
+    },
+    {
+      "field" : "CoverageSpatial",
+      "labels" : {
+        "el" : "σημεία",
+        "en" : "points"
+      },
+      "multiline" : true
+    },
+    {
+      "multitype" : true,
+      "valuelist" : [
+
+      ],
+      "field" : "CoverageTemporal",
+      "labels" : {
+        "el" : "χρονολ.",
+        "en" : "chron."
+      }
+    },
+    {
+      "multitype" : true,
+      "valuelist" : [
+
+      ],
+      "field" : "Creator",
+      "labels" : {
+        "el" : "τομεάρχης",
+        "en" : "supervisor"
+      }
+    },
+    {
+      "field" : "DateEarliest",
+      "labels" : {
+        "el" : "έναρξη",
+        "en" : "start"
+      }
+    },
+    {
+      "field" : "DateLatest",
+      "labels" : {
+        "el" : "λήξη",
+        "en" : "end"
+      }
+    },
+    {
+      "multitype" : true,
+      "valuelist" : [
+
+      ],
+      "field" : "Deposit",
+      "labels" : {
+        "el" : "απόθεση",
+        "en" : "deposit"
+      }
+    },
+    {
+      "field" : "Description",
+      "multiline" : true
+    },
+    {
+      "field" : "Materials",
+      "labels" : {
+        "el" : "Υλικά",
+        "en" : "materials"
+      },
+      "multiline" : true
+    },
+    {
+      "field" : "Elevations",
+      "labels" : {
+        "el" : "βάθη",
+        "en" : "elevations"
+      }
+    },
+    {
+      "field" : "Format",
+      "labels" : {
+        "el" : "διαστάσεις",
+        "en" : "dimensions"
+      }
+    },
+    {
+      "field" : "Diameter",
+      "labels" : {
+        "el" : "διάμετρος",
+        "en" : "diameter"
+      },
+      "tips" : {
+        "el" : "Εισάγετε την διάμετρο του νομίσματος.",
+        "en" : "Enter the coin's diameter"
+      }
+    },
+    {
+      "field" : "CoinWeight",
+      "labels" : {
+        "el" : "βάρος",
+        "en" : "weight"
+      },
+      "tips" : {
+        "el" : "Εισάγετε το βάρος του νομίσματος (γραμ)",
+        "en" : "Enter the coin's weight (gram)"
+      }
+    },
+    {
+      "tips" : {
+        "el" : "Εισάγετε το υλικό από το οποίο είναι κατασκευασμένο το νόμισμα",
+        "en" : "Enter the material the coin is made of"
+      },
+      "valuelist" : [
+        "Bronze",
+        "Gold",
+        "Silver",
+        "Electron",
+        "Silver-plated"
+      ],
+      "field" : "Fabric",
+      "labels" : {
+        "el" : "υλικό",
+        "en" : "fabric"
+      }
+    },
+	{
+      "tips" : {
+        "el" : "Εισάγετε την πόλη ή αρχή που εξέδωσε το νόμισμα",
+        "en" : "Enter the city or entity which issued the coin"
+      },
+      "valuelist" : [
+        "Maroneia",
+        "Orthagoreia",
+        "Abdera",
+        "Dikaia",
+        "Zone",
+		"Ainos",
+		"Kardia",
+		"Samothrace",
+		"Thasos",
+		"Neapolis",
+		"Mende",
+		"Amphipolis",
+		"Tragilos",
+		"Alexander III",
+		"Lysimachus"
+      ],
+      "field" : "IssueAuthority",
+      "labels" : {
+        "el" : "Αρχή Έκδοσης",
+        "en" : "Issue Authority"
+      }
+    },
+	{
+      "tips" : {
+        "el" : "Εισάγετε την περιοχή προέλευσης του νομίσματος",
+        "en" : "Enter the region of origin of the coin"
+      },
+      "valuelist" : [
+        "Thrace",
+		"Macedonia",
+		"Peloponnese",
+		"Thessaly",
+		"Mysie",
+		"Aiolis"
+      ],
+      "field" : "Region",
+      "labels" : {
+        "el" : "Περιοχή προέλευσης",
+        "en" : "Region of origin"
+      }
+    },
+    {
+      "tips" : {
+        "el" : "Εισάγετε την βιβλιογραφική αναφορά για το νόμισμα",
+        "en" : "Enter the bilbiographic reference for the coin"
+      },
+      "valuelist" : [
+        "Psoma et al. 2008, #",
+        "Chryssanthaki 2007, #",
+        "ESG #",
+        "RIC VIII #"
+      ],
+      "field" : "Bibliography",
+      "labels" : {
+        "el" : "βιβλιογραφία",
+        "en" : "bibliography"
+      }
+    },
+    {
+      "field" : "Obverse",
+      "labels" : {
+        "el" : "πρόσθια όψη",
+        "en" : "obverse"
+      },
+	  "valuelist" : [
+        "Forepart of prancing horse l.",
+        "Forepart of prancing horse r.",
+		"Bunch of grapes on vine branch with leaves",
+		"Head of Apollo l. wearing laurel wreath",
+		"Head of Dionysus r. wearing ivy wreath",
+		"Gorgoneion, frontal with protruding tongue",
+		"Horse galloping r., under the belly monogram",
+		"Head of Athena wearing helmet r.",
+		"Head of Heracles r. wearing lion’s skin",
+		"Head of Hermes to r. wearing petasos"
+      ],
+      "tips" : {
+        "el" : "Εισάγετε μια περιγραφή για την πρόσθια όψη του νομίσματος",
+        "en" : "Enter a description of the coin's obverse side"
+      }
+    },
+    {
+      "field" : "Reverse",
+      "labels" : {
+        "el" : "οπίσθια όψη",
+        "en" : "reverse"
+      },
+	  "valuelist" : [
+		"Bunch of grapes on vine branch with leaves",
+		"Vine with four branches of grapes within linear square",
+		"Lyre",
+		"Cantharus in incuse square",
+		"Quadripartite incuse square",
+		"Club l. below bow in bow case",
+		"Macedonian helmet"
+      ],
+      "tips" : {
+        "el" : "Εισάγετε μια περιγραφή για την οπίσθια όψη του νομίσματος",
+        "en" : "Enter a description of the coin's reverse side"
+      }
+    },
+	{
+      "field" : "CoinInscription",
+      "labels" : {
+        "el" : "Επιγραφή εμπρόσθιας / οπίσθιας όψης",
+        "en" : "Inscription obverse / reverse"
+      },
+	  "valuelist" : [
+		"Μ-Α / Ρ-Ω",
+		"/Μ-ΑΡΩ",
+		"ΜΑΡΩΝΙΤΩΝ",
+		"ΜΑΡΩΝ-ΙΤΩΝ Ε-ΠΙ ΠΥΘ-ΟΝΙΚΟ",
+		"ΖΩ-ΝΑΙ",
+		"ΟΡΘΑΓΟ-ΡΕΩΝ"
+      ],
+      "tips" : {
+        "el" : "Εισάγετε την επιγραφή στην εμπρόσθια και την οπίσθια όψη του νομίσματος",
+        "en" : "Enter the inscription on the the coin's obverse and reverse sides"
+      }
+    },
+	{
+      "field" : "Denomination",
+      "labels" : {
+        "el" : "Αξία νομίσματος",
+        "en" : "Denomination value of the coin"
+      },
+	  "valuelist" : [
+		"Tetradrachm",
+		"Didrachm",
+		"Drachm",
+		"Obol",
+		"Hemiobol",
+		"Tritetartemorion"
+      ],
+      "tips" : {
+        "el" : "Εισάγετε την αξία του νομίσματος",
+        "en" : "Enter the coin's denomination value"
+      }
+    },
+    {
+      "tip" : "Enter the locus number.",
+      "tips" : {
+        "el" : "# ομάδας",
+        "en" : "locus number"
+      },
+      "field" : "Identifier",
+      "labels" : {
+        "el" : "αύξων #",
+        "en" : "number"
+      }
+    },
+    {
+      "field" : "FineWareWeight",
+      "labels" : {
+        "el" : "fine",
+        "en" : "fine"
+      }
+    },
+    {
+      "field" : "CoarseWareWeight",
+      "labels" : {
+        "el" : "coarse",
+        "en" : "coarse"
+      }
+    },
+    {
+      "field" : "CookWareWeight",
+      "labels" : {
+        "el" : "cook",
+        "en" : "cook"
+      }
+    },
+    {
+      "field" : "TotalWeight",
+      "labels" : {
+        "el" : "ολικό",
+        "en" : "total"
+      }
+    },
+    {
+      "field" : "TileWeight",
+      "labels" : {
+        "el" : "βάρος",
+        "en" : "weight"
+      }
+    },
+    {
+      "field" : "AmphoraToes",
+      "labels" : {
+        "el" : "δάχτυλα",
+        "en" : "toes"
+      }
+    },
+    {
+      "field" : "AmphoraLids",
+      "labels" : {
+        "el" : "χείλη",
+        "en" : "lids"
+      }
+    },
+    {
+      "field" : "AmphoraReading",
+      "labels" : {
+        "el" : "επιγραφή",
+        "en" : "reading"
+      }
+    },
+    {
+      "field" : "FineWareMNV",
+      "labels" : {
+        "el" : "fine",
+        "en" : "fine"
+      }
+    },
+    {
+      "field" : "CoarseWareMNV",
+      "labels" : {
+        "el" : "coarse",
+        "en" : "coarse"
+      }
+    },
+    {
+      "field" : "CookWareMNV",
+      "labels" : {
+        "el" : "cook",
+        "en" : "cook"
+      }
+    },
+    {
+      "field" : "IdentifierUUID",
+      "labels" : {
+        "el" : "αύξων #",
+        "en" : "identifier"
+      }
+    },
+    {
+      "field" : "InventoryNumber",
+      "labels" : {
+        "el" : "# καταγραφής",
+        "en" : "mus. inv. #"
+      }
+    },
+    {
+      "field" : "Inventory",
+      "labels" : {
+        "el" : "Inventory",
+        "en" : "Inventory"
+      }
+    },
+    {
+      "multitype" : true,
+      "valuelist" : [
+
+      ],
+      "field" : "Looking",
+      "labels" : {
+        "el" : "προσανατολισμός",
+        "en" : "looking"
+      }
+    },
+    {
+      "field" : "LotContexts",
+      "labels" : {
+        "el" : "περιεχ.ομαδ.",
+        "en" : "lot contexts"
+      }
+    },
+    {
+      "field" : "LotDates",
+      "labels" : {
+        "el" : "ημερομ.ομαδοπ.",
+        "en" : "lot dates"
+      }
+    },
+    {
+      "field" : "LotGrid",
+      "labels" : {
+        "el" : "κάνναβος ομαδ.",
+        "en" : "lot grid"
+      }
+    },
+    {
+      "field" : "LotLevels",
+      "labels" : {
+        "el" : "βάθη ομαδοπ.",
+        "en" : "lot levels"
+      }
+    },
+    {
+      "field" : "LotStorage",
+      "labels" : {
+        "el" : "θέση αποθήκευσης",
+        "en" : "storage"
+      },
+      "valuelist" : [
+        "Sack",
+        "Tin",
+        "Box",
+        "Envelope"
+      ]
+    },
+    {
+      "multivalue" : true,
+      "valuelist" : [
+        "Alabaster",
+        "Amber",
+        "Antler",
+        "Basalt",
+        "Bone",
+        "Botanical",
+        "Ceramic",
+        "Copper alloy",
+        "Enamel",
+        "Faience",
+        "Flint or chert",
+        "Frit",
+        "Gilded Bronze",
+        "Glass",
+        "Glaze",
+        "Gold",
+        "Hair",
+        "Horn",
+        "Iron",
+        "Ivory",
+        "Lead",
+        "Leather",
+        "Limestone",
+        "Marble",
+        "Mudstone",
+        "Obsidian",
+        "Pigment",
+        "Plaster",
+        "Semi-Precious",
+        "Shell",
+        "Silver",
+        "Slag",
+        "Slip",
+        "Steatite",
+        "Stone",
+        "Terracotta",
+        "Unbaked Clay",
+        "Unidentified",
+        "Unidentified Metal",
+        "Unidentified Stone",
+        "Unknown",
+        "Wood"
+      ],
+      "field" : "Material",
+      "labels" : {
+        "el" : "υλικό",
+        "en" : "material"
+      }
+    },
+    {
+      "field" : "NotebookPage",
+      "labels" : {
+        "el" : "σελίδα ημερολ.",
+        "en" : "page"
+      }
+    },
+    {
+      "field" : "Relation",
+      "labels" : {
+        "el" : "σχέση",
+        "en" : "relation"
+      },
+      "multiline" : true
+    },
+    {
+      "field" : "RelationAttachments",
+      "labels" : {
+        "el" : "σχετικές εικόνες",
+        "en" : "related images"
+      },
+      "multiline" : true
+    },
+    {
+      "field" : "RelationURLs",
+      "labels" : {
+        "el" : "σύνδεσμοι σχέσεων",
+        "en" : "relation URLs"
+      }
+    },
+    {
+      "field" : "RightsRating",
+      "labels" : {
+        "el" : "εκτίμηση",
+        "en" : "rating"
+      }
+    },
+    {
+      "field" : "RightsStatus",
+      "labels" : {
+        "el" : "τρέχων",
+        "en" : "current"
+      }
+    },
+    {
+      "field" : "RightsSidelined",
+      "labels" : {
+        "el" : "μετατοπισμένο",
+        "en" : "sidelined"
+      }
+    },
+    {
+      "field" : "Season",
+      "labels" : {
+        "en" : "season"
+      }
+    },
+    {
+      "field" : "SectionNumber",
+      "labels" : {
+        "el" : "# τομέα",
+        "en" : "section #"
+      }
+    },
+    {
+      "field" : "Source",
+      "labels" : {
+        "el" : "τομέας",
+        "en" : "trench"
+      }
+    },
+    {
+      "multitype" : true,
+      "valuelist" : [
+
+      ],
+      "field" : "Square",
+      "labels" : {
+        "el" : "τετράγωνο",
+        "en" : "square"
+      }
+    },
+    {
+      "field" : "Storage",
+      "labels" : {
+        "el" : "θέση αποθήκευσης",
+        "en" : "storage"
+      }
+    },
+    {
+      "field" : "Title",
+      "labels" : {
+        "el" : "ονομασία",
+        "en" : "name"
+      },
+      "valuelist" : [
+
+      ]
+    },
+    {
+      "field" : "Modifier",
+      "labels" : {
+        "el" : "Φωτεινότητα",
+        "en" : "modifier"
+      },
+      "valuelist" : [
+        "light",
+        "dark",
+        "very dark"
+      ]
+    },
+    {
+      "field" : "Hue",
+      "labels" : {
+        "el" : "Απόχρωση",
+        "en" : "Hue"
+      },
+      "valuelist" : [
+        "blackish",
+        "brownish",
+        "grayish",
+        "reddish",
+        "greenish",
+        "pinkish",
+        "yellowish"
+      ]
+    },
+    {
+      "field" : "Color",
+      "labels" : {
+        "el" : "Χρώμα",
+        "en" : "Color"
+      },
+      "valuelist" : [
+        "black",
+        "brown",
+        "gray",
+        "red",
+        "green",
+        "pink",
+        "yellow",
+        "white",
+        "mixed"
+      ]
+    },
+    {
+      "field" : "Boundary",
+      "labels" : {
+        "el" : "Περίγραμμα",
+        "en" : "Boundary"
+      },
+      "valuelist" : [
+        "sharp",
+        "diffuse",
+        "varies"
+      ]
+    },
+    {
+      "field" : "Sorting",
+      "labels" : {
+        "el" : "Κατάσταση",
+        "en" : "Sorting"
+      },
+      "valuelist" : [
+        "good",
+        "moderate",
+        "poor"
+      ]
+    },
+    {
+      "field" : "Sieve",
+      "labels" : {
+        "el" : "Κόσκινο",
+        "en" : "Sieve"
+      },
+      "valuelist" : [
+        "none",
+        "partial",
+        "100%"
+      ]
+    },
+    {
+      "field" : "Type",
+      "labels" : {
+        "el" : "τύπος",
+        "en" : "type"
+      }
+    },
+    {
+      "multitype" : true,
+      "valuelist" : [
+
+      ],
+      "field" : "TypeName",
+      "labels" : {
+        "el" : "υπότυπος",
+        "en" : "subtype"
+      }
+    }
+  ]
+}
