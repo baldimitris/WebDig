@@ -53,13 +53,7 @@ The files in the current repository include only the software without any data o
     - The following command can provide information about the web-server status: https://my-server-url.com/WebDigServer.php?cmd=info
 
 ## About
-WebDig utilizes the following libraries:
-    - [jQuery library](https://jquery.com)
-    - [Pako compression library](https://github.com/nodeca/pako)
-    - [Jsbn encryption library](http://www-cs-students.stanford.edu/~tjw/jsbn)
-    - [Plotly graphing library](https://plotly.com/javascript)
-    - [PHPWord MS-Word document generation library](https://github.com/PHPOffice/PHPWord)
-    - [multiselect-dropdown](https://github.com/codeshackio/multi-select-dropdown-js)
+WebDig utilizes the following libraries: [jQuery library](https://jquery.com), [Pako compression library](https://github.com/nodeca/pako), [Jsbn encryption library](http://www-cs-students.stanford.edu/~tjw/jsbn), [Plotly graphing library](https://plotly.com/javascript), [PHPWord MS-Word document generation library](https://github.com/PHPOffice/PHPWord), [multiselect-dropdown](https://github.com/codeshackio/multi-select-dropdown-js).
 
 
 
