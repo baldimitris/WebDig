@@ -1,0 +1,1 @@
+   class qs6 {  	constructor( ) { 	} 	 	 	setReferenceLinks( ReferenceLinks_json ) { 		this.ReferenceLinks = ReferenceLinks_json; 	} 	 	getLink( reference_text ) { 		return this.ReferenceLinks[ reference_text ]; 	} 	 	 	getAllReferenceLinks() { 		return this.ReferenceLinks; 	} 	 } 

@@ -1,0 +1,17 @@
+Dimitris $2y$12$t9gLnpV9bsNSA89.tVrl8OwT8FXAcMnye62Y5ZEyD7IYb5F2OJCDG All,admin
+Nathan $2y$12$fMk9nApnEwtJuOzv/k99NONE8l65b4u9EcLGBBmmrjyy7zxOqDf9O All
+Mark $2y$12$EZYlwNQStYM53bqwqBXST.M/5jSJwP.NtFrRgeNbgu3iodsVmDhlS Artifact,Feature,Image,Partition,Sample,Untyped,Section,addnew
+Nick $2y$12$puw4Yperzb02S9Zkrud/TO1.2duO0NQ.ygrpmUGY/vR8PYScawAHa Artifact,Feature,Image,Partition,Sample,Untyped,Section,addnew,del
+Marina $2y$12$8mWBZW780vUvk0fZhVG35OojObMmUN7RFsM.ag9z1p63UVgDb3/4u Artifact,Feature,Image,Partition,Sample,Untyped,Section,addnew
+Elena $2y$12$Mpd2nOxa8vZWY0o0bp/RE.q8uqUhJlhuummuhTOuGCiSYVULycnpy Artifact,Feature,Image,Partition,Sample,Untyped,Section,addnew
+Ioannis $2y$12$K9oohxcrqhQphO3HpMMUYOm03rB7Jlg6dskNfynGTSV4fZWeAXuXO Artifact,Feature,Image,Partition,Sample,Untyped,Section,addnew
+DBrellas $2y$12$Xs6qMgww/boqHlc6BzZa0u0YG22jzaEAM9XmtNKjc/.Du5eZSYgpa Artifact,Feature,Image,Partition,Sample,Untyped,Section,addnew
+Ioannis $2y$12$yWrNLRxxakcqInq8zXyIbeqJ9csPuFXcD0/teFJjLYVlrA8/qUAUW Artifact,Feature,Image,Partition,Sample,Untyped,Section,addnew
+Alexandros $2y$12$V6IFoltYUsAAIYBiWdjmNe5ZvroE8mswpZKyoiGS5Y4O1ylbVZgmS Artifact,Feature,Image,Partition,Sample,Untyped,Section,Ceramics
+Chantel $2y$12$5yC6uRIH86QtLyGVRvNl7eUgdS9H/15voX.0HKP3.gKr5eobVwxDS Context,Artifact,Feature,Image,Partition,Sample,Untyped,Section
+Jessica $2y$12$8e4/uIWy30S4X728QUvkNe49vk/ph9wo5iYdkrRJdg2rNS1tMO1Am Artifact,Feature,Image,Partition,Sample,Untyped,Section
+Maria $2y$12$osLZQPX8XAbiup05xPcFpeuydVJMFhB0oKcq8787vGxHX6iagHS7. Artifact,Feature,Image,Partition,Sample,Untyped,Section
+Konstantina $2y$12$3B0y9TJRwO0HRHetP.uFwOGuTmjif/OyZGQaiwejgnmj87IqGyWuC Artifact,Feature,Image,Partition,Sample,Untyped,Section
+Will $2y$12$VQAlXjbKbzZsYD8BryJABORiwmQK10r.5lCZdBrBczLRk25aKnWg2 Artifact,Feature,Image,Partition,Sample,Untyped,Section
+Mattia $2y$12$IKxmP.J09Q5FGKJP1ho8HeqEhWETI64Z0z1Otzgj9VGdesGBiNoO. All
+Oswald $2y$12$zHfqCIM6iBIkiP8T9ERAv.tIElUcoPn/SHMFh.gZr67eAGDWnAgEi Artifact,Feature,Image,Partition,Sample,Untyped,Section
