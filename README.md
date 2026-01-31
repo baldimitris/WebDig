@@ -51,3 +51,17 @@ The files in the current repository include only the software without any data o
     - The software keeps zipped backup copies of the data (ExcavationData.json) automatically when changes are made. These backup files are located at "Data/backup" folder. Older backup files should be periodically erased to ensure that they do not occupy a lot of space.
     - The file "log.txt", which holds system events, like signing in and altering data can grow large.
     - The following command can provide information about the web-server status: https://my-server-url.com/WebDigServer.php?cmd=info
+
+## About
+WebDig utilizes the following libraries:
+    - [jQuery library](https://jquery.com)
+    - [Pako compression library](https://github.com/nodeca/pako)
+    - [Jsbn encryption library](http://www-cs-students.stanford.edu/~tjw/jsbn)
+    - [Plotly graphing library](https://plotly.com/javascript)
+    - [PHPWord MS-Word document generation library](https://github.com/PHPOffice/PHPWord)
+    - [multiselect-dropdown](https://github.com/codeshackio/multi-select-dropdown-js)
+
+
+
+
+
