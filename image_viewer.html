@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>WebDig - Image</title>
+	<link rel="icon" href="images/system/favicon4.png">
+	
+	<style>
+		body {background-color: black; font-family:"Calibri", "Arial";}
+		
+		#controls { 
+			background: whitesmoke;  border-radius: 10px;  font-size: 120%;
+			padding-top:4px;  padding-bottom:4px;  padding-left:12px;  padding-right:12px;
+			margin-top:4px;   margin-bottom:6px;   margin-left:10px;   margin-right:10px;
+			display:flex;  justify-content:center;  align-items:center;
+		} 
+		
+		#canvas_wraper { overflow:scroll;  margin:auto;  display:block; }
+		
+		#item_info { position:absolute;  left:10px;  top:60px;  color:whitesmoke;  font-size:105%;  border-right: 2px solid whitesmoke; padding-left:4px; padding-right:8px; }
+		.info_row{ display:flex; flex-direction:row;  margin-left:2px; }
+		.info1{ grid-column:1; }
+		.info2{ grid-column:2; margin-left:8px; width:240px;}
+		
+		#message { color: darkorange; }
+	</style>
+	
+	<!-- jquery library for displaying floating window. API: https://api.jqueryui.com/dialog/ -->
+	<link rel="stylesheet" href="libs/jquery/jquery-ui.css">
+	<link rel="stylesheet" href="libs/jquery/style.css">
+	<script src="libs/jquery/jquery-3.6.0.js"></script>
+	<script src="libs/jquery/jquery-ui.js"></script>
+	
+	<script type="application/javascript">
+		const phpURL="./WebDigServer.php";
+		const HEADER_HEIGHT = 60;
+		var TrenchName = "";
+		var imageUUID = "";
+		var itemUUID = "";
+		var imageData = null;
+		var itemData = null;
+		var canvaswrapper = null;
+		var canvas = null;
+		var context = null;
+		var theImage = null;
+		//
+		var MouseIsDown = false;
+		
+		window.onload = function Init() {
+			// init canvas
+			canvaswrapper = document.getElementById("canvas_wraper");
+			canvas = document.getElementById('annotations_canvas');
+			context = canvas.getContext('2d');
+			canvas.style.height = (window.innerHeight-HEADER_HEIGHT) + "px";
+			canvas.width  = canvas.offsetWidth;
+			canvas.height = canvas.offsetHeight;
+			// init event listeners
+			canvas.addEventListener('keydown',this.Canvas_KeyDownHandler,false);
+			canvas.addEventListener('dblclick',this.Canvas_DoubleclickHandler,false);
+			canvas.addEventListener('mousedown',this.Canvas_MouseDownHandler,false);
+			canvas.addEventListener('mousemove',this.Canvas_MouseMoveHandler,false);
+			canvas.addEventListener('mouseup',this.Canvas_MouseUpHandler,false);
+			// read the data of the image from the URL
+			document.body.style.cursor = "wait";
+			var url_object = new URL( window.location.href );
+			imageUUID  = url_object.searchParams.get("img_uuid");
+			itemUUID   = url_object.searchParams.get("item_uuid");
+			
+			// send request to server for data about this image
+			$.ajax({                                      
+				url: phpURL, type: "POST", data: { Command:"GetItemData", Arg1:imageUUID } 
+			}).done(function( msg ) {
+				if( msg.length > 20 ) { 
+					// Parse json data from server
+					imageData = JSON.parse(msg);
+					displayItemInfo();
+					// fetch image file
+					theImage = new Image();        
+					theImage.src = "Data/images/" + imageData["FormatImage"];
+					theImage.onload = function() {
+						document.body.style.cursor = "default";
+						if( theImage.height >= canvas.height ) { // large image
+							document.getElementById("zoom_range").max = 100;
+						} else { // small image
+							document.getElementById("zoom_range").max = parseInt( 100 * canvas.height/theImage.height );
+						}
+						DrawCanvas( canvas.height/theImage.height ); 
+					}
+				} else {
+					document.getElementById("message").innerHTML = "Error while fetching the requested image. Either the image file was not found or the communication was interrupted. Please try again.";
+				}
+			});
+			
+			// send request to server for data about the item where the image belongs to
+			$.ajax({                                      
+				url: phpURL, type: "POST", data: { Command:"GetItemData", Arg1:itemUUID } 
+			}).done(function( msg ) {
+				if( msg.length > 20 ) {
+					itemData = JSON.parse(msg);
+					TrenchName = itemData["Trench"];
+					displayItemInfo();
+				} else {
+					document.getElementById("message").innerHTML = "Error while fetching data about the item to which the the requested image belongs to. Either the data is missing or the communication was interrupted. Please try again.";
+				}
+			});
+		};
+		
+		function DrawCanvas( ZoomFactor ) {
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			displayImage( ZoomFactor );
+			displayAnnotations();
+		}
+		
+		function displayImage( ZoomFactor ) {
+			// set proper size and display image
+			canvas.width = theImage.width * ZoomFactor;
+			canvas.height = theImage.height * ZoomFactor;
+			canvas.style.width = theImage.width * ZoomFactor + "px";
+			canvas.style.height = theImage.height * ZoomFactor + "px";
+			canvaswrapper.style.width = theImage.width * ZoomFactor + "px";
+			canvaswrapper.style.height = theImage.height * ZoomFactor + "px";
+			context.drawImage(theImage, 0, 0, theImage.width * ZoomFactor, theImage.height * ZoomFactor );
+			// display scroll bars if neccessary
+			canvaswrapper.style.maxHeight = (window.innerHeight-HEADER_HEIGHT) + "px";
+			canvaswrapper.style.maxWidth = (window.innerHeight-HEADER_HEIGHT) * theImage.width / theImage.height + "px";
+			if ( canvas.height < window.innerHeight-HEADER_HEIGHT + 2 ) {
+				canvaswrapper.style.overflow = "hidden";
+				canvas.style.cursor = "default";
+			} else {
+				canvaswrapper.style.overflow = "scroll";
+				canvas.style.cursor = "grab";
+			}
+			// display the zoom value
+			document.getElementById("zoom_range").value = parseInt(ZoomFactor*100);
+			document.getElementById("zoom_txt").textContent = parseInt(ZoomFactor*100) + "%";
+			
+		}
+				
+		function displayAnnotations() {
+			if( document.getElementById("display_annotations_checkbox").checked ) {
+				annotations_json = JSON.parse( imageData["FormatImageAnnotations"] );
+				// draw Arrows
+				for( let i=0; i<annotations_json.length; i++ ) {
+					context.beginPath();
+					if( annotations_json[i]["type"].localeCompare("arrow") == 0 ) {
+						context.strokeStyle = annotations_json[i]["color"];
+						context.lineWidth = 1 + 2*parseInt(canvas.height/400);
+						var from_x = annotations_json[i]["points"][0][0]*canvas.width;
+						var from_y = annotations_json[i]["points"][0][1]*canvas.height;
+						var to_x = annotations_json[i]["points"][1][0]*canvas.width;
+						var to_y = annotations_json[i]["points"][1][1]*canvas.height;
+						draw_arrow( context, from_x, from_y, to_x, to_y );
+						context.stroke();
+					} else {
+						console.log( "Unknown annotation type: " + annotations_json[i]["type"]);
+					}
+					context.closePath();
+				}
+				// draw Text
+				for( let i=0; i<annotations_json.length; i++ ) {
+					context.beginPath();
+					if( annotations_json[i]["type"].localeCompare("text") == 0 ) {
+						context.fillStyle = annotations_json[i]["color"];
+						context.font = "bold " + Math.floor(4 + 3*parseInt(canvas.height/150)) + "px Arial";
+						context.fillText( annotations_json[i]["text"], annotations_json[i]["points"][0][0]*canvas.width, annotations_json[i]["points"][0][1]*canvas.height);
+						context.fill();
+					} else {
+						console.log( "Unknown annotation type: " + annotations_json[i]["type"]);
+					}
+					context.closePath();
+				}
+			}
+		}
+		
+		function draw_arrow(context, from_x, from_y, to_x, to_y) {
+			var headlen = 8 + 5*parseInt(canvas.height/300); // length of head in pixels
+			var dx = to_x - from_x;
+			var dy = to_y - from_y;
+			var angle = Math.atan2(dy, dx);
+			context.moveTo(from_x, from_y);
+			context.lineTo(to_x, to_y);
+			context.lineTo(to_x - headlen * Math.cos(angle - Math.PI / 6), to_y - headlen * Math.sin(angle - Math.PI / 6));
+			context.moveTo(to_x, to_y);
+			context.lineTo(to_x - headlen * Math.cos(angle + Math.PI / 6), to_y - headlen * Math.sin(angle + Math.PI / 6));
+		}
+		
+		
+		function displayItemInfo() {
+			var s = "";
+			s += "<p class='info_row'>";
+			s +=   "<div class='info1'><b>" + "Trench:" + "</b><br></div>";
+			s +=   "<div class='info2'>" + TrenchName + "</div>";
+			s += "</p>";
+			if( imageData!=null && imageData.hasOwnProperty("Title") && imageData["Title"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Image Title:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + imageData["Title"] + "</div>";
+				s += "</p>";
+			}
+			s += "<br>";
+			if( itemData!=null && itemData.hasOwnProperty("Identifier") && itemData["Identifier"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1' ><b>" + "Identifier:" + "</b><br></div>";
+				s +=   "<div class='info2' >" + itemData["Identifier"] + "</div>";
+				s += "</p>";			
+			}
+			if( itemData!=null && itemData.hasOwnProperty("Title") && itemData["Title"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Title:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + itemData["Title"] + "</div>";
+				s += "</p>";
+			}
+			if( itemData!=null && itemData.hasOwnProperty("Square") && itemData["Square"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Square:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + itemData["Square"] + "</div>";
+				s += "</p>";
+			}
+			if( itemData!=null && itemData.hasOwnProperty("Description") && itemData["Description"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Description:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + itemData["Description"] + "</div>";
+				s += "</p>";
+			}
+			if( itemData!=null && itemData.hasOwnProperty("Boundary") && itemData["Boundary"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Boundary:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + itemData["Boundary"] + "</div>";
+				s += "</p>";
+			}
+			if( itemData!=null && itemData.hasOwnProperty("Modifier") && itemData["Modifier"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Modifier:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + itemData["Modifier"] + "</div>";
+				s += "</p>";
+			}if( itemData!=null && itemData.hasOwnProperty("Hue") && itemData["Hue"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Hue:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + itemData["Hue"] + "</div>";
+				s += "</p>";
+			}if( itemData!=null && itemData.hasOwnProperty("Color") && itemData["Color"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Color:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + itemData["Color"] + "</div>";
+				s += "</p>";
+			}if( itemData!=null && itemData.hasOwnProperty("Sorting") && itemData["Sorting"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Sorting:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + itemData["Sorting"] + "</div>";
+				s += "</p>";
+			}if( itemData!=null && itemData.hasOwnProperty("Sieve") && itemData["Sieve"].length > 0 ) {
+				s += "<p class='info_row'>";
+				s +=   "<div class='info1'><b>" + "Sieve:" + "</b><br></div>";
+				s +=   "<div class='info2'>" + itemData["Sieve"] + "</div>";
+				s += "</p>";
+			}
+			document.getElementById("item_info").innerHTML = s;
+			console.log( imageData["IdentifierUUID"] );
+		}
+		
+				
+		// Allow user to grab and move the canvas.
+		function Canvas_MouseDownHandler(e) {
+			MouseIsDown = true;
+			MousePrevX = e.clientX;
+			MousePrevY = e.clientY;
+		}
+		function Canvas_MouseMoveHandler(e) {
+			if( MouseIsDown ) {
+			if( canvaswrapper.scrollWidth != canvaswrapper.clientWidth || canvaswrapper.scrollHeight != canvaswrapper.clientHeight ) { // check if there are scroll-bars
+				const speedX = 1 + Math.abs(e.clientX - MousePrevX);
+				const speedY = 1 + Math.abs(e.clientY - MousePrevY);
+				if( e.clientX > MousePrevX ) horizontal_drift = -speedX; else if ( e.clientX < MousePrevX ) horizontal_drift = speedX; else  horizontal_drift = 0;
+				if( e.clientY > MousePrevY ) vertical_drift = -speedY; else if( e.clientY < MousePrevY ) vertical_drift = speedY; else vertical_drift = 0;
+				canvaswrapper.scrollTo( canvaswrapper.scrollLeft + horizontal_drift,  canvaswrapper.scrollTop + vertical_drift );
+				MousePrevX = e.clientX;
+				MousePrevY = e.clientY;
+			}
+			}
+		}
+		function Canvas_MouseUpHandler(e) {
+			MouseIsDown = false;
+		}
+		function Canvas_DoubleclickHandler(e) {
+			DrawCanvas((window.innerHeight-HEADER_HEIGHT)/theImage.height);
+		}
+		
+		// Allow user to move and zoom canvas from the keyboard
+		function Canvas_KeyDownHandler(e) {
+			if(e.key == '+') {
+				console.log((parseInt(document.getElementById("zoom_range").value)+1)/100);
+				DrawCanvas((parseInt(document.getElementById("zoom_range").value)+1)/100);
+			} else if(e.key == '-') {
+				DrawCanvas((parseInt(document.getElementById("zoom_range").value)-1)/100);
+			} 
+		}
+
+	</script>
+</head>
+
+
+
+
+
+
+<body>
+	<div id="controls">
+		<input type="checkbox" id="display_annotations_checkbox" name="display_annotations_checkbox"  onchange="DrawCanvas(canvas.height/theImage.height);" checked>    <label for="display_annotations_checkbox">Display Annotations</label>
+		<label for="zoom_range" style="margin-left:50px; cursor:pointer;" title="Click me to zoom to fit screen" onclick="DrawCanvas((window.innerHeight-HEADER_HEIGHT)/theImage.height);">Zoom:</label>       
+		<input type="range" id="zoom_range" min="0" max="100" step="1" value="10" oninput="document.getElementById('zoom_txt').textContent=this.value+'%'; DrawCanvas(this.value/100);">
+		<label id="zoom_txt" for="zoom_range" class="property_value" style="width:50px;">0%</label>
+    </div>
+	
+	<div id="message">
+	</div>
+	
+	<div id="item_info">
+	</div>
+	
+	<div id="canvas_wraper">
+	<canvas id="annotations_canvas" tabindex="1">  </canvas>
+	</div>
+</body>
+
+</html>

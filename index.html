@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="utf-8" />
+	<title>MTAP Online Application Login</title>
+	<link rel="icon" href="images/system/favicon.png">
+</head>
+
+<body>
+	<div id="banners">
+		<div class="banner_column">
+			<a href="https://www.princeton.edu/"> 
+			<img class="banner" src="images/system/Princeton.png" height="54px" title="Princeton University"> 
+			</a>
+		</div>
+		<div class="banner_column">
+			<a href="https://artandarchaeology.princeton.edu/">
+			<img class="banner" src="images/system/A_and_A.png" height="54px" title="Department of Art & Archaeology, Princeton University">
+			</a>
+		</div>
+		<div class="banner_column">
+			<a href="https://www.culture.gov.gr/el/ministry/SitePages/viewyphresia.aspx?iID=1699">
+			<img class="banner" src="images/system/Ephorate.png" height="54px" title="Ephorate of Antiquities of Rhodope">
+			</a>
+		</div>
+		<div class="banner_column">
+			<a href="https://www.ascsa.edu.gr/">
+			<img class="banner" src="images/system/ASCSA.png" height="54px" title="American School of Classical Studies at Athens">
+			</a>
+		</div>
+	</div>
+
+
+	<div id="description">
+		<p>
+			The Molyvoti, Thrace, Archaeological Project is a Greek-American scientific expedition in Aegean Thrace. The project is a cooperation (synergasia) between the Ephorate of Antiquities of Rhodope and the American School of Classical Studies at Athens, represented by Princeton University. Field work took place during 2013–2015, 2019, and 2022–2023. 
+		</p>
+		<p>
+			This website hosts an on-line interactive application which presents the results of the excavation campaign. Here you can find information about the archaeological finds and their contexts, with a focus on the 4th-century B.C. House of Hermes.
+		</p>
+	</div>
+
+	<!-- jquery library for displaying floating window. API: https://api.jqueryui.com/dialog/ -->
+	<link rel="stylesheet" href="libs/jquery/jquery-ui.css">
+	<link rel="stylesheet" href="libs/jquery/style.css">
+	<script src="libs/jquery/jquery-3.6.0.js"></script>
+	<script src="libs/jquery/jquery-ui.js"></script>
+	
+	<script src="libs/encryption/jsbn.js"></script>
+	<script src="libs/encryption/rsa.js"></script>
+	<script src="libs/encryption/prng4.js"></script>
+	<script src="libs/encryption/rng.js"></script>
+	
+	<!-- css -->
+	<link type="text/css" rel="stylesheet" href="login.css" media="all" />
+
+	<div id="web_app_login_container">
+		<div id="web_app_login_form_background">	
+		</div>
+		<div id="web_app_login_form">
+			<form action="WebDigServer.php" method="post">
+				<label class="textboxlabel" for="Username">Username</label>
+				<input id="username_textbox" type="text" placeholder="Enter Username" name="Username" required>
+				<label class="textboxlabel" for="Password"><b>Password</b></label>
+				<input id="password_textbox" type="password" placeholder="Enter Password" name="Password" required>
+				<label id="msg_label" > &nbsp; </label>
+				<button id="login_button" type="button" onclick="LoginClicked(document.getElementById('username_textbox').value, document.getElementById('password_textbox').value );">Login</button>
+			</form>
+			<div id="web_app_login_form_guest">
+				<a href="javascript:enter_web_app()" id="guest_link"> Login as Guest </a>
+			</div>
+		</div>
+	</div>
+	
+	<script>
+		function enter_web_app() {
+			window.location.href = "app_main.html";
+		}
+
+		// Encryption guidelines: https://stackoverflow.com/questions/12457234/encrypt-in-javascript-decrypt-in-php-using-public-key-cryptography
+		// Encryption library:    http://www-cs-students.stanford.edu/~tjw/jsbn/
+		function LoginClicked( the_username, the_password ) {
+			// NO GUESTS YET:
+			if ( the_username.length == 0 || the_password.length == 0 ){
+				document.getElementById('msg_label').innerHTML = "Empty username or password";
+				return;
+			}
+		
+			// encrypt the password along with a timestamp using a public RSA key.
+			const PublicExponent_hex = "10001";
+			const PublicModulus_hex = "BF9DCD55ADB6BE017544D67F656BB13F5518BB7ADC72CB34A300238CFFC7D915279B3075B5E5F41AEAF8202A622EC5C513182D439873773EE753DB41BFF7022AF333DC0F1C0AFF74119ABCDEBA7D5EF139FF0E3D941B9B2D6035763AC3BE72E2567312AF78C2289A5A622FDBFA96D711DD9D4D4989DA65CCBF261368E4C2BACE1D2E151C7928D0829D20785DCB0644F1BF9154807B2F8F288CC5E8B14DE4362F3AA2BE5CAF63747022E106FBC0DB67B40B7E8F774F909BAF4FC744A6D428C6BD7D5B72369D1E6C5E8B6468BA1BEC1A28A2897B90BF1B0FE6FA0C1AA6583FCF96166A27E7FD469834AE8D1242758291A22A792B95F685F2272E07518C1096F359681D64875D086083489263F6E4790B7751BE985EF3D2776D5098C6C2DA1571217B38E1F066DDF64F57C9208CF24373A8ADF6C0435B1AF25B5F61C16BD85D2AE2B683A83D78B2216FD2C2FF8A59C66EDB7D6E2DC5E4806CFFC52BEE1987E9B41210FA493AF4E3224FDFEC03562C165BF35F0C3889129F4206CE8CFEFEC08EF5C80560F49306EAF313B0BD2E1CC491828C525CC09D80B7834CCD2AB2E717DD7B7FAA64D4EE9B46D32CD1188874D0E2F2C86AFD2FFD29B4DEDEAED4CD2F402BD02A4451F0DCA88EE49C81C600A69A8C292A6A4383E34E907B5DD34D2DA538805477A9E561F530AB70B58FD041F1E49C83263432479034CBD9180EC909F66CD4DE35";
+			var rsa = new RSAKey();
+			rsa.setPublic(PublicModulus_hex, PublicExponent_hex);
+			var encrypted_password = rsa.encrypt(the_password + " " + parseInt(Date.now()/1000)); // add a timestamp to avoid copying the encrypted password
+			// send credentials to server
+			$.ajax({                                      
+			url: "WebDigServer.php",
+			type: "POST",
+			data: { Username: the_username, Password: encrypted_password } 
+			}).done(function( msg ) {
+				if( msg.length > 100  ) {
+					enter_web_app();
+				} else { // login failed
+					document.getElementById('msg_label').innerHTML = msg;
+				}
+			});
+	}
+	</script>
+
+	<div id = "footer">
+		<a href="https://mtap.scholar.princeton.edu/" class="footer_links"> MTAP home page</a>
+	</div>
+
+</body>
+</html>
+

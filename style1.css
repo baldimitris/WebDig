@@ -1,0 +1,799 @@
+/******************************** Layout  ************************************/
+body {
+	height: 100vh;
+	min-height:100vh;
+	max-height:100vh;
+	overflow: hidden;	
+	font-family: "Calibri", "Arial";
+}
+
+#masterContainer {
+	display: grid;
+	/*grid-template-columns: 22% auto;*/
+	grid-template-columns: min-content 1fr;
+	gap: 4px;
+}
+
+#canvas_wrapper {
+	grid-row: 2 / span 3;
+	grid-column: 2;
+}
+
+
+#MainProgressBarWindow {
+	position: absolute;
+	margin: auto;
+	top: 40%;
+	left: 35%;
+	width: 30%;
+	color: teal;
+	padding: 10px;
+	font-size: 120%;
+	border-radius: 10px;
+	border:3px solid lightseagreen;
+	background-color: honeydew;
+	z-index: 10;
+}
+#MainProgressBar_bg {
+	width: 100%;
+	height: 24px;
+	border-radius: 10px;
+	border:1px solid lightseagreen;
+	background-color: whitesmoke;
+}
+#MainProgressBar {
+	width: 0%;
+	height: 24px;
+	border-radius: 10px;
+	background-color: lightseagreen;
+}
+
+/*
+body {
+position: absolute;
+top: 0;
+left: 0;
+bottom: 0;
+right: 0;
+overflow-y: hidden;
+overflow-x: hidden;
+}
+html {
+overflow-y: hidden;
+background-color: transparent;
+}
+*/
+
+/********************************* App Header ************************************/
+
+#appHeader {
+	grid-row: 1;
+	grid-column: 1 / span 2;
+	text-align: left;
+	width: 100%;
+	height: 100%;
+	padding-top: 0px;
+	margin-bottom: 0px;
+	/*min-height: 28px;*/
+	/*max-height: 28px;*/
+}
+/*#appHeaderRight {
+	grid-row: 1;
+	grid-column: 2;
+	text-align: left;
+	margin-left: 12px;
+	width:100%;
+	height:100%;
+	min-height:32px;
+	max-height:32px;
+}*/
+#new_data_button_img {
+	cursor: pointer;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+#AvailableTrenchesCombo {
+	border-radius: 10px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 1px;
+	padding-right: 1px;
+	background: honeydew;
+	min-width: 280px;
+	max-width: 280x;
+	width: 400px;
+}
+#Label_Plan {
+	margin-left: 20px;
+}
+#AvailablePlansCombo {
+	border-radius: 10px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 8px;
+	padding-right: 8px;
+	font-size: 110%;
+	background: honeydew;	
+	min-width:180px;
+	max-width:180px;
+	margin-right: 28px;
+}
+
+#help_menu {
+  position: relative;
+  float:right;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin-left: 10px;
+  border: none;
+}
+#help_questionmark {
+	position: relative;
+	border:3px solid teal;
+	border-radius: 50%;
+	padding-left: 6px;
+	padding-right: 6px;
+	color: teal;
+	text-decoration:none;
+	font: 18px "Franklin Gothic Demi", "Bauhaus 93", "Arial"
+}
+#help_questionmark a:link, #help_questionmark a:visited, #help_questionmark a:hover { color: teal; text-decoration:none; }
+#help_questionmark a:active { color: lightseagreen; text-decoration:none; }
+.help-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: honeydew;
+  box-shadow: 0px 20px 20px 0px rgba(100,100,100,0.3);
+  left: -280px;
+  min-width:302px;
+  z-index: 1;
+  margin-top: 6px;
+  font-family: "Calibri", "Arial";
+}
+.help-dropdown-content a {
+  color: teal;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.help-dropdown-content a:hover {background-color:gainsboro;}
+.show {display:block;}
+
+
+#user_info {
+	display: flex;
+	flex-direction: row;
+	float:right;
+	margin-right: 8px;
+	margin-top: 4px;
+}
+#user_info_name{
+	color: teal;
+	font-family:  "Cooper", "Calibri", "Arial";
+	min-width: 100px;
+	text-align:right;
+}
+#user_info a:link, #user_info a:visited, #user_info a:hover { color: teal; text-decoration:none; }
+#user_info a:active { color: lightseagreen; text-decoration:none; }
+.dropdowns {
+  position: relative;
+  display: inline-block;
+}
+.user-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: honeydew;
+  box-shadow: 0px 20px 20px 0px rgba(100,100,100,0.3);
+  min-width:102px;
+  z-index: 1;
+  margin-top: 24px;
+  font-family: "Calibri", "Arial";
+}
+.user-dropdown-content a {
+  color: teal;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.user-dropdown-content a:hover {background-color:gainsboro;}
+.show {display:block;}
+
+/********************************* categories combo ************************************/
+
+/*.select-editable {position:relative; background-color:white; border:solid grey 1px;  width:120px; height:18px;}
+.select-editable select {position:absolute; top:0px; left:0px; font-size:14px; border:none; width:120px; margin:0;}
+.select-editable input {position:absolute; top:0px; left:0px; width:100px; padding:1px; font-size:12px; border:none;}
+*/
+
+.select-editable {position:relative; background-color:white; border:solid grey 1px;  width:100%; height:18px; margin:0;}
+.select-editable select {position:absolute; top:0px; left:0px; font-size:125%; border:none; width:100%; margin:0;}
+.select-editable input {position:absolute; top:0px; left:0px; width:90%; font-size:125%; border:none;}
+.select-editable select:focus, .select-editable input:focus {outline:none;}
+.select-editable option { padding-left:30px; }
+
+
+#itemsSearch {
+	width: 100%;
+	grid-row: 2;
+	grid-column: 1;
+	border: none;
+	margin-bottom: 4px;
+}
+
+#itemCategoriesCombo {
+	border-radius: 10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+	font-size: 120%;
+	color: white;
+	background: lightseagreen;
+	width:286px;
+}
+.combo_all { font-weight: bold; font-size: 120%; }
+.combo_type { font-weight: bold; padding-left: 10px; font-size: 105%; }
+.combo_subtype { padding-left: 100px; margin-left: 100px; font-size:95%}
+
+#ItemControls_LeftColumn {
+	border-radius: 10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	background: lightseagreen;
+	width: 170px;
+	height: 100%;
+	display: none;
+}
+#itemCategoriesPanel {
+	border-radius: 10px;
+	border: none;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 4px;
+	padding-right: 4px;
+	font-size: 110%;
+	background: lightseagreen;
+	color: white;
+	width: 170px;
+}
+
+
+#item_search_button{
+	margin-left: 290px;
+	cursor:pointer;
+	background: transparent;
+	border:3px solid lightseagreen;
+	border-radius: 10px;
+}
+
+#itemsSearchText {
+	width:220px;
+	border-radius: 10px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	padding-left: 12px;
+	padding-right: 12px;
+	font-size: 120%;
+	color: white;
+	background: lightseagreen;	
+}
+
+
+/********************************* Left Column ************************************/
+#itemsList {
+	grid-row: 3;
+	grid-column: 1;
+}
+#LowerLeftBar {
+	grid-row: 4;
+	grid-column: 1;
+	width: 100%;
+	color: lightseagreen;
+	display: flex;
+}
+
+#InfoBar {
+	width:100%;
+	padding-left: 6px;
+	padding-right: 6px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+	color: lightseagreen;
+	margin-right: 16px;
+}
+#InfoBar:hover {
+	cursor: pointer;
+	background-color: honeydew;
+}
+
+.dropbtn {
+  background-color: lightseagreen;
+  color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: none;
+  border-radius: 8px;
+}
+.dropup {
+  position: relative;
+  display: inline-block;
+}
+.dropup-content {
+  display: none;
+  position: absolute;
+  background-color: lightseagreen;
+  min-width: 360px;
+  bottom: 55px;
+  z-index: 1;
+  border: 3px solid teal;
+  border-radius: 8px;
+}
+.dropup-content a {
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  display: block;
+}
+.dropup-content a:hover {background-color: teal}
+.dropup:hover .dropup-content {
+  display: block;
+}
+.dropup:hover .dropbtn {
+  background-color: teal;
+}
+.exportFormatBtn {
+  background-color: teal;
+  color: white;
+  width: 100%;
+  height: 40px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  border: 2px solid teal;
+  border-radius: 8px;
+  cursor:pointer;
+}
+.exportFormatBtn:hover {
+  border: 2px solid white;
+}
+
+/********************************* Items List ************************************/
+.listitemcontainer {
+	display: grid;
+	grid-template-columns: 22% auto;
+	grid-template-rows: auto 25%;
+	max-width: 320px; 
+}
+.listitemleft {
+	grid-row: 1 / span 2;
+	grid-column: 1;
+	text-align: center;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	margin:3px;
+}
+.listitemright {
+	grid-row: 2;
+	grid-column: 2;
+	text-align: left;
+	margin-left:6px;
+	padding-top: 6px;
+	padding-bottom: 6px;
+}
+.listindex {
+	visibility: hidden;
+	width:0px;
+	height:0px;
+}
+
+#itemsList ul{
+	background: #d2f7f4;
+	color:black;
+	margin-top:12px;
+	padding:0;
+}
+#itemsList li{
+	border:2px solid black;
+	padding:0;
+}
+#itemsList li:last-child{
+	/*border-bottom:none;*/
+}
+#itemsList li:hover{
+	background:deepskyblue;
+	color:black;
+}
+
+#itemsList nav ul{height:78vh;}
+#itemsList nav ul{overflow-y:scroll;}
+
+/********************************** Menu ***************************************/
+
+.dropup {
+	font-family: "Calibri", "Arial";
+	font-size: 120%;
+}
+
+
+
+/********************************** Canvas ***************************************/
+
+#canvas_wrapper {
+    margin: 0;
+	text-align: center;
+	/*overflow: scroll; display:block;*/
+}
+		
+#canvas {
+    border: 1px solid black;
+	margin: 0;
+	width:  100%;
+	height: 100%;
+	/*image-rendering: pixelated;*/
+}
+
+
+#crosssection_canvas {
+	width:  100%;
+	height: 100%;
+	margin: 0;
+}
+
+#canvas_buttons {
+	text-align: right;
+	margin: 0;
+	padding: 0;
+}
+.canvasBtn {
+  background-color: white;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 4px;
+  padding-right: 4px;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  border: none;
+  border-radius: 8px;
+}
+.canvasBtn:hover { box-shadow: 0px 0px 0px 2px  lightseagreen inset; }
+.canvasBtn:active { box-shadow: 0px 0px 0px 2px  lightseagreen inset; background-color: teal; }
+
+
+#drag_button, #selectminus_button, #polygonminus_button, #pencilminus_button {
+	margin-right:20px;
+}
+
+/******************************** sort items dialog ***********************************/
+#SortItemsDialog {
+	display: grid;
+	grid-template-columns: 80% auto;
+	gap: 6px;
+}
+
+#SortItemsDialog ul{
+	width: 100%;
+	color:black;
+	margin-top:6px;
+	padding:0;
+}
+#SortItemsDialog li {
+	background: khaki;
+	cursor: grab;
+}
+
+#sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+#sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.3em; height: 18px; }
+#sortable li span { position: absolute; margin-left: -1.3em; }
+
+/******************************** Cross Sections dialog ***********************************/
+
+#CrossSection_Controls { margin:2px; padding-top:6px; padding-bottom:6px; }
+/*#CrossSection_TwoD   { border: 2px solid crimson; margin:2px; }
+#CrossSection_ThreeD { border: 2px solid crimson; margin:2px; }*/
+/******************************** Advanced Search dialog ***********************************/
+#AdvancedSearchContent {
+	display: grid;
+	grid-template-columns: 25% auto;
+	gap: 6px;
+}
+.AdvancedSearch_Text {
+	width: 100%;
+	border: 1px solid black;
+	border-radius: 8px;
+	padding: 5px;
+}
+#AdvancedSearchInstructions {
+	color:teal;
+}
+/******************************** item info dialog ***********************************/
+#itemInfoDialog {
+	display: grid;
+	grid-template-columns: 28% auto;
+	gap: 6px;
+}
+#add_new_image_button {
+	font-size: 32px;
+	padding-left:14px;
+	padding-right:14px;
+	border-radius: 8px;
+	color:teal;
+}
+
+.dialog_images_row{
+	margin-bottom: 8px;
+	display: flex;
+	flex-direction: row;
+}
+.dialog_item_image{
+	margin-right: 8px;
+}
+.dialog_input_box {
+	width: 100%;
+}
+.dialog_itemfield {
+	width: 100%;
+	border: 1px solid black;
+	border-radius: 8px;
+	padding: 5px;
+	min-height:18px;
+	max-height:20px;
+	overflow-y:auto;
+}
+.dialog_itemfield a:link,.dialog_itemfield a:visited, .dialog_itemfield a:hover { color: royalblue; }
+.dialog_itemfield_editable {
+	background: pink;
+	border: none;
+	border-radius: 8px;
+	width: 99%;
+}
+
+.parentData_inDialog a:link,.parentData_inDialog a:visited, .parentData_inDialog a:hover, .parentData_inDialog { color: SaddleBrown; }
+.parentData_inDialog a:active { color: firebrick; }
+
+.LicenseInfo {
+	color: RebeccaPurple;
+}
+
+.CitationLink_inDialog a:link,.CitationLink_inDialog a:visited, .CitationLink_inDialog a:hover, .CitationLink_inDialog, .CitationLink_inDialog a:active { color: mediumvioletred; }
+.CitationLink_field { min-height:38px; }
+
+.ItemArea_inDialog { color: green; }
+
+.dialogPrevBtn:hover  { background-color: silver; }
+.dialogPrevBtn:focus  { background-color: transparent;}
+.dialogPrevBtn:active { background-color: lightseagreen;}
+.dialogPrevBtn {
+	background-color:transparent;
+	border-radius: 8px;
+	border: 2px solid teal;
+	color: teal;
+	margin-top: 2px;
+	float: left;
+}
+.dialogNextBtn:hover  { background-color: silver; }
+.dialogNextBtn:focus  { background-color: transparent;}
+.dialogNextBtn:active { background-color: lightseagreen;}
+.dialogNextBtn {
+	background-color:transparent;
+	border-radius: 8px;
+	border: 2px solid teal;
+	color: teal;
+	margin-top: 2px;
+	float: left;
+}
+.dialogSaveBtn:hover,  .dialogCloseBtn:hover  { background-color: silver; }
+.dialogSaveBtn:focus,  .dialogCloseBtn:focus  { background-color: transparent;}
+.dialogSaveBtn:active, .dialogCloseBtn:active { background-color: lightseagreen;}
+.dialogSaveBtn, .dialogCloseBtn {
+	background-color:transparent;
+	border-radius: 8px;
+	border: 2px solid teal;
+	color: teal;
+	margin-top: 2px;
+	float: right;
+}
+.dialogCloseBtn {
+	float: left;
+}
+.ui-dialog-buttonset {
+	width:100%;
+	padding: 0px;
+	margin: 0px;
+}
+.ui-dialog .ui-dialog-buttonpane {
+	border-top: 2px solid teal;
+    margin: 0px;
+    padding: 0px;
+}
+
+#ItemInfoDialog_ActionButtons_Label {
+	margin-top: 40px;
+	color: green;
+}
+#ItemInfoDialog_ActionButtons {
+	width: 100%;
+	margin-top: 20px;
+	margin-bottom: 16px;
+	border: 0px solid green;
+	border-radius: 8px;
+	padding: 5px;
+}
+.action_btn {
+	width: 32px;
+	height: 32px;
+	padding: 4px;
+	margin-right: 12px;
+	border: 3px solid green;
+	border-radius: 50%;
+}
+.action_btn:hover  { opacity: 0.5; }
+.action_btn:active { border-color: lightseagreen; }
+
+/* should be implemented usibg the above classes, but they seem not to be recognised */
+#searchdialogSaveBtn, #searchdialogCloseBtn, #sortdialogSaveBtn, #sortdialogCloseBtn, #reflinksdialogSaveBtn, #reflinksdialogCloseBtn, #iteminfodialogPrevBtn, #iteminfodialogNextBtn, #iteminfodialogSaveBtn {
+	background-color:transparent;
+	border-radius: 8px;
+	border: 2px solid teal;
+	color: teal;
+	margin-top: 2px;
+}
+#iteminfodialogUpBtn { margin-left: 26px; }
+#iteminfodialogUpBtn, #iteminfodialogDownBtn {
+	background-color:transparent;
+	border-radius: 8px;
+	border: 2px solid teal;
+	color: teal;
+	margin-top: 2px;
+}
+
+#searchdialogSaveBtn:hover, #searchdialogCloseBtn:hover, #sortdialogSaveBtn:hover, #sortdialogCloseBtn:hover, #reflinksdialogSaveBtn:hover, #reflinksdialogCloseBtn:hover, #iteminfodialogPrevBtn:hover, #iteminfodialogNextBtn:hover, #iteminfodialogUpBtn:hover, #iteminfodialogDownBtn:hover,#iteminfodialogSaveBtn:hover { background-color: silver; }
+#searchdialogSaveBtn:focus, #searchdialogCloseBtn:focus, #sortdialogSaveBtn:focus, #sortdialogCloseBtn:focus, #reflinksdialogSaveBtn:focus, #reflinksdialogCloseBtn:focus, #iteminfodialogPrevBtn:focus, #iteminfodialogNextBtn:focus, #iteminfodialogUpBtn:focus, #iteminfodialogDownBtn:focus, #iteminfodialogSaveBtn:focus { background-color: transparent; }
+#searchdialogSaveBtn:active, #searchdialogCloseBtn:active, #sortdialogSaveBtn:active, #sortdialogCloseBtn:active, #reflinksdialogSaveBtn:active, #reflinksdialogCloseBtn:active, #iteminfodialogPrevBtn:active, #iteminfodialogUpBtn:active, #iteminfodialogDownBtn:active, #iteminfodialogNextBtn:active, #iteminfodialogSaveBtn:active { background-color: lightseagreen; }
+
+#ReferenceLinksTable {
+	width:100%;
+	table-layout: fixed;
+	border-collapse: collapse;
+	border: 2px solid teal;
+}
+#ReferenceLinksTable td, #ReferenceLinksTable th	{
+	border: 1px solid #ddd;
+	padding: 5px;
+	word-wrap:break-word;
+	border-collapse: collapse;
+	height: 22px;
+}
+#ReferenceLinksTable th {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  text-align: center;
+  background-color: DarkTurquoise;
+  color: white;
+}
+#ReferenceLinksTable tr:nth-child(even){background-color: #f2f2f2;}
+#ReferenceLinksTable tr:hover {background-color: #ddd;}
+#add_row_to_table_button {
+	margin-top:40px;
+	background-color: DarkTurquoise;
+	color: White;
+	padding: 6px;
+	font-weight: bold;
+}
+
+
+
+
+
+
+
+/******************************** various dialogs ***********************************/
+#SettingsDialogContent {
+	display: grid;
+	grid-template-columns: 28% auto;
+	gap: 6px;
+}
+
+
+.CrossSectionControls_combo {
+	border: 2px solid crimson; border-radius: 10px;
+	padding-top: 3px; padding-bottom: 3px; padding-left: 8px; padding-right: 8px;
+	margin-right: 18px;
+	font-size: 110%; background: lightsalmon;
+}
+
+
+
+.relations-grid-container {
+	display: grid;
+	grid-template-columns: auto 10%;
+	padding: 16px;
+}
+.relation-description {
+	border-radius: 10px;
+	border:2px solid lightseagreen;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+.relation-parent, .relation-description, .relation-child, #relation-type-combo, #NEW_RelatedIdentifier {
+	display: inline-block;
+	margin-right: 20px;
+}
+.relation-parent {
+	font-weight: bold;
+}
+.relation-remove-btn {
+	cursor: pointer;
+	background: white;
+	color: lightseagreen;
+	border: 3px solid lightseagreen;
+	border-radius: 10px;
+}
+.relation-add-btn {
+	cursor: pointer;
+	background: white;
+	color: lightseagreen;
+	border: 3px solid lightseagreen;
+	border-radius: 10px;
+}
+.relation-remove-btn:hover{
+	color: teal;
+	border: 3px solid teal;
+}
+.relation-add-btn:hover {
+	color: teal;
+	border: 3px solid teal;
+}
+hr.relation-hr {
+	border: 1px solid lightseagreen;
+}
+#relation-type-combo {
+	border-radius: 10px;
+	border: 3px solid teal;
+	color: teal;
+	background: white;
+	min-width: 120x;
+	max-width: 120x;
+	width: 120px;	
+}
+#NEW_RelatedIdentifier {
+	border-radius: 10px;
+	border: 3px solid teal;
+	color: teal;
+	background: white;
+	min-width: 160x;
+	max-width: 160x;
+	width: 160px;
+}
+
+.HalfCircleButton {
+	width: 28px;
+    height: 40px; /* as the half of the width */
+    background-color: white;
+	color: lightseagreen;
+    border-top-right-radius: 50px;  /* 100px of height + 10px of border */
+    border-bottom-right-radius: 50px; /* 100px of height + 10px of border */
+	border: 2px solid lightseagreen;
+	margin-right: 16px;
+	font-weight: bold;
+}
+.HalfCircleButton:hover {
+	color: teal;
+	border: 2px solid teal;
+}
+
+
+#ItemControls {
+	display: grid;
+	grid-template-columns: auto auto;
+	gap: 2px;
+}
+#ItemControls_RightColumn {
+	/*width: 350px; */
+}
