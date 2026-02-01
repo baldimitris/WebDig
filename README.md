@@ -1,5 +1,5 @@
 # WebDig
-WebDig is a software tool for post-processing and publishing data produced by archaeologic excavations. The tool is a web-application which presents the data on a map of the excavation site. It allows the users to preview, edit and categorize the data. It can read the data exported from [iDig](https://idig.tips/), which is an iPad-application for recording the finds during the excavation campaign.
+WebDig is a software tool for post-processing and publishing data produced by archaeologic excavations. The tool is a web-application which presents the excavation finds and areas on a map of the excavation site. It allows the users to preview, edit and categorize the data. It can read the data exported from [iDig](https://idig.tips/), which is an iPad-application for recording the finds during the excavation campaign. Many aspects of the software are customizable, enabling its usage by different archaeological campaigns.
 
 The software was initially created for the needs of the ["Molyvoti, Thrace, Archaeological Project"](https://mtap.scholar.princeton.edu/), which is a Greek-American scientific expedition in Aegean Thrace. The project is a cooperation (synergasia) between the Ephorate of Antiquities of Rhodope and the American School of Classical Studies at Athens, represented by Princeton University. Field work took place during 2013–2015, 2019, and 2022–2023 and [the data have been published using the WebDig software](https://mtap-database.princeton.edu).
 
@@ -53,7 +53,7 @@ The files in the current repository include only the software without any data o
     - The following command can provide information about the web-server status: https://my-server-url.com/WebDigServer.php?cmd=info
 
 ## About
-WebDig utilizes the following libraries: [jQuery library](https://jquery.com), [Pako compression library](https://github.com/nodeca/pako), [Jsbn encryption library](http://www-cs-students.stanford.edu/~tjw/jsbn), [Plotly graphing library](https://plotly.com/javascript), [PHPWord MS-Word document generation library](https://github.com/PHPOffice/PHPWord), [multiselect-dropdown](https://github.com/codeshackio/multi-select-dropdown-js).
+WebDig is written in JavaScript and PHP. WebDig utilizes the following libraries: [jQuery library](https://jquery.com), [Pako compression library](https://github.com/nodeca/pako), [Jsbn encryption library](http://www-cs-students.stanford.edu/~tjw/jsbn), [Plotly graphing library](https://plotly.com/javascript), [PHPWord MS-Word document generation library](https://github.com/PHPOffice/PHPWord), [multiselect-dropdown](https://github.com/codeshackio/multi-select-dropdown-js).
 
 
 
