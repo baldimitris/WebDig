@@ -15,7 +15,7 @@ The files in the current repository include only the software without any data o
 2. Visit the web server through a web browser.
 3. Login as user 'admin', using password 'admin'.
 4. Change the admin password for security reasons by clicking on the admin username at the upper right corner and then settings.
-5. **Create users** by clicking on the admin username at the upper right corner.
+5. **Create users** by clicking on the admin username at the upper right corner. The rights of each user can be defined: the name of an item type or category means that the user can edit the data of such items, 'All' means that the user can edit all types and categories plus some extra menu choices, 'Coordinates' means that the user can change the coordinates of the items, 'admin' means that the user can access administrative menus.
 6. The file index.html contains an example on how to incorporate create a login form for your web-site app. You can change this to meet your needs.
 7. **Import data** from iDig (batch-import) into the WebDig application:
     - export json files from iDig and retrieve them (can be done through i-tunes).
