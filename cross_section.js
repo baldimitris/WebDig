@@ -26,39 +26,11 @@ class CrossSection {
 
 
 	/**
-	 * Parses the "CoverageXYZ" field of a trench item and returns the polygons described in the following format:
-	 * [   [ {X:3, Y:4}, {X:7, Y:6}, {X:8, Y:11}, {X:9, Y:2} ]  ,   [ {X:0, Y:1}, {X:2, Y:4}, {X:8, Y:6} ]   ]
+	 * Parses the "Location" field of an item and returns the polygons described in the following format:
+	 * [   [ {X:3, Y:4, Z:1}, {X:7, Y:6, Z:1}, {X:8, Y:11, Z:1}, {X:9, Y:2, Z:1} ]  ,   [ {X:0, Y:1, Z:2}, {X:2, Y:4, Z:2}, {X:8, Y:6, Z:2} ]   ]
 	 */
 	getItemPolygons() {
-		var Polygons = [];
-		var polygon_idx = 0;
-		try {
-			if( this.ItemData.hasOwnProperty("CoverageXYZ") ) {
-				var S = this.ItemData["CoverageXYZ"].split("POLYGON Z");
-				for ( var i=1; i<S.length; i++ ) {
-					S[i] = S[i].substring( S[i].indexOf('('), S[i].indexOf(')') );
-					S[i] = S[i].replaceAll( '(', '' );
-					S[i] = S[i].replaceAll( ')', '' );
-					S[i] = S[i].replaceAll( ',', '' );
-					var coordinates = S[i].split(' ');
-					Polygons[polygon_idx] = [];
-					for(let idx=0; idx<coordinates.length; idx+=3) {
-						Polygons[polygon_idx].push( {"X":parseFloat(coordinates[idx]), "Y":parseFloat(coordinates[idx+1]), "Z":parseFloat(coordinates[idx+2]) } );
-						console.log("ZORO A " + parseFloat(coordinates[idx]) + " " + parseFloat(coordinates[idx+1]) + " " + parseFloat(coordinates[idx+2]) );
-					}
-					polygon_idx++;
-				}
-			} else if( this.ItemData.hasOwnProperty("Location") ) {
-				Polygons[polygon_idx] = [];
-				for(let idx=0; idx<this.ItemData["Location"].length; idx+=1) {
-					var Point = this.ItemData["Location"][idx];
-					Polygons[polygon_idx].push( {"X":Point["X"], "Y":Point["Y"], "Z":Point["Z"] } );
-					console.log("ZORO B " + Point["X"] + " " + Point["Y"] + " " + Point["Z"]);
-				}
-				polygon_idx++;
-			}
-		} catch(ex) { console.log("Error during polygon parsing for " + this.ItemData["Identifier"] + ": " + ex); }
-		return Polygons;
+		return this.ItemData["Location"];
 	}
 	
 
@@ -75,7 +47,15 @@ class CrossSection {
 		var section_x2 = this.section_x2;
 		var section_y2 = this.section_y2;
 		this.SectionPoints = [];
-		if( typeof this.ItemData["Location"] != "undefined"  &&  this.ItemData["Location"].length <= 1 ) return this.SectionPoints; // <<<<<<<<
+		
+		// ignore items with no Location information for the current layer, or which are just points on the map
+		if( this.ItemData.hasOwnProperty("Location") ) {
+			if( this.ItemData["Location"].length <= Current_Layer ) return this.SectionPoints;
+			if( this.ItemData["Location"][Current_Layer].length <= 1 ) return this.SectionPoints; 
+		} else {
+			return this.SectionPoints;
+		}
+		
 		var Polygons = this.getItemPolygons();
 		
 		for( let poly_idx=0; poly_idx<Polygons.length; poly_idx++) { // for each polygon which describes the item

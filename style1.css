@@ -99,8 +99,8 @@ background-color: transparent;
 	padding-left: 1px;
 	padding-right: 1px;
 	background: honeydew;
-	min-width: 280px;
-	max-width: 280x;
+	min-width: 270px;
+	max-width: 270x;
 	width: 400px;
 }
 #Label_Plan {
@@ -110,13 +110,13 @@ background-color: transparent;
 	border-radius: 10px;
 	padding-top: 0px;
 	padding-bottom: 0px;
-	padding-left: 8px;
-	padding-right: 8px;
+	padding-left: 5px;
+	padding-right: 5px;
 	font-size: 110%;
 	background: honeydew;	
-	min-width:180px;
-	max-width:180px;
-	margin-right: 28px;
+	min-width:170px;
+	max-width:170px;
+	margin-right: 18px;
 }
 
 #help_menu {
@@ -126,7 +126,7 @@ background-color: transparent;
   padding-bottom: 4px;
   padding-left: 5px;
   padding-right: 5px;
-  margin-left: 10px;
+  margin-left: 5px;
   border: none;
 }
 #help_questionmark {
@@ -166,13 +166,13 @@ background-color: transparent;
 	display: flex;
 	flex-direction: row;
 	float:right;
-	margin-right: 8px;
+	margin-right: 4px;
 	margin-top: 4px;
 }
 #user_info_name{
 	color: teal;
 	font-family:  "Cooper", "Calibri", "Arial";
-	min-width: 100px;
+	min-width: 70px;
 	text-align:right;
 }
 #user_info a:link, #user_info a:visited, #user_info a:hover { color: teal; text-decoration:none; }
@@ -199,6 +199,29 @@ background-color: transparent;
 }
 .user-dropdown-content a:hover {background-color:gainsboro;}
 .show {display:block;}
+
+
+
+/* for the floating effect of the range input elemenr which pops up when the layers button is clicked */
+.popover {
+  position: absolute;
+  margin-top: 10px;
+  padding: 15px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  accent-color: teal;
+  gap: 8px;
+  z-index: 100;
+}
+/*text-orientation: upright;*/
+#Layers_slider {
+  writing-mode: vertical-lr;
+  direction: ltr;
+}
 
 /********************************* categories combo ************************************/
 
@@ -467,7 +490,7 @@ background-color: transparent;
 
 
 #drag_button, #selectminus_button, #polygonminus_button, #pencilminus_button {
-	margin-right:20px;
+	margin-right:12px;
 }
 
 /******************************** sort items dialog ***********************************/

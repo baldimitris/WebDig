@@ -1,6 +1,5 @@
 // to create documentation execute: jsdoc -r .\ -d .\Documentation
 
-// TODO: check citation links
 
 /**
  * This module 
@@ -132,7 +131,6 @@ function initialize() {
 			if( TheAccessLevels.charAt(TheAccessLevels.length-1) != ',' ) TheAccessLevels = TheAccessLevels + ",";
 		}
 		// hide unautorized GUI elements
-		//console.log( "[" + TheAccessLevels + "] " + (TheAccessLevels.toLowerCase()).indexOf(",all,") + " [" + TheAccessLevels.toLowerCase()+ "] "  + TheAccessLevels.toLowerCase().includes(",all,") + " " + TheAccessLevels.length );
 		if( TheAccessLevels.toLowerCase().includes(",all,") == false ) {
 			const collection = document.getElementsByClassName("visible-to-admin-only");
 			for (let i = 0; i < collection.length; i++) {
@@ -145,6 +143,13 @@ function initialize() {
 			  collection[i].style.display = "None";
 			}
 		}
+		
+		// hide coordinate-related buttons for non authorized users
+		if( TheAccessLevels.toLowerCase().indexOf(",admin,")<0 && TheAccessLevels.toLowerCase().indexOf(",coordinates,")<0) {
+			document.getElementById("layers_button").style.display = "None"; 
+			document.getElementById("alter_a_coordinate_button").style.display = "None"; 
+		}
+
 	});
 	
 	//////// Fetch the ReferenceLinks ////////
@@ -170,13 +175,14 @@ function initialize() {
 		}
 	});
 	
+	
 	///////////////////////
 	get_Excavation_Data_and_Preferences();
 	///////////////////////
 	
 	// initialize selection for canvas items
 	map.activate_Select(); 
-	// hide the Define-Coordinates-Manually button. This becomes visible when the user wants to define coordinates from within the ItemInfoDialog 	
+	// hide the Define-Coordinates-Manually button. This becomes visible when the user wants to define coordinates from within the ItemInfoDialog. This is for users having access to "All".
 	document.getElementById("target_button").style.display = "None"; 
 	// check periodically if the session is alive in order to inform the user
 	setInterval(Check_if_Session_is_Alive, 350*1000);
@@ -292,6 +298,17 @@ function GetExcavationData() {
 						AvailablePlansCombo.value = ExcavationPreferences["DefaultPlan"];
 					} 
 				}
+				// resolve the maximum layer depth in order to set the maximum at the select-layer which is displayed when the alter_a_coordinate_button is clicked
+				var current_num_of_Layers;
+				for (let idx = 0; idx < ExcData.length; idx++) { 
+					if( ExcData[idx].hasOwnProperty("Location") ) {
+						current_num_of_Layers = ExcData[idx]["Location"].length;
+						if( current_num_of_Layers > Max_num_of_Layers ) Max_num_of_Layers = current_num_of_Layers;
+					}
+				}
+				document.getElementById("Layers_slider").max = Max_num_of_Layers;
+				document.getElementById('Layers_rangeValue').textContent = 0;
+				document.getElementById('Layers_slider').value = 0;
 				// display data to user
 				PopulateCategoriesCombo(); // fill a combobox with all available item categories 
 				if( ExcavationPreferences.hasOwnProperty("ItemsList_SortByFields") && ExcavationPreferences["ItemsList_SortByFields"].length > 0 ) {
@@ -302,7 +319,7 @@ function GetExcavationData() {
 				num_of_selected_items = 0;
 				updateInfoBar();
 				updateSelectedItemsOnList();
-				document.getElementById("itemsList_ul").scrollTop = 0;			
+				document.getElementById("itemsList_ul").scrollTop = 0;
 				map.drawWorld();
 				
 				// automatically display the dialog with item information, if requested to do so (by the user at  the url - for citation links).
@@ -667,7 +684,7 @@ function ExportData_CSV() {
 		return;
 	}
 	delimeter = "\t";
-	var FieldsToIgnore = ["Selected", "Visible", "Location", "Type", "DateUTC", "CoverageXYZ", "Format", "RelationIncludes", "RelationIncludesUUID", "RelationBelongsToUUID", "RelationIsAboveUUID", "RelationIsBelowUUID", "ThumbnailImageUUID", "RelationIsCoevalWithUUID", "RelationCutsUUID", "RelationIsCutByUUID", "RelationIsNextToUUID", "RelationIsBeforeUUID", "RelationIsAfterUUID"];
+	var FieldsToIgnore = ["Selected", "Visible", "Location", "Type", "DateUTC", "Format", "RelationIncludes", "RelationIncludesUUID", "RelationBelongsToUUID", "RelationIsAboveUUID", "RelationIsBelowUUID", "ThumbnailImageUUID", "RelationIsCoevalWithUUID", "RelationCutsUUID", "RelationIsCutByUUID", "RelationIsNextToUUID", "RelationIsBeforeUUID", "RelationIsAfterUUID"];
 	var csvHeaders = ["IdentifierUUID", "Identifier", "Title", "Type"];
 	var fileContent = "";
 	var num_of_exported_items = 0;
@@ -921,7 +938,7 @@ function PopulateCategoriesCombo() {
 		an_option.value = GroupName;
 		an_option.innerHTML = GroupName;
 		an_option.classList.add( "combo_type" );
-		if( GroupName != "Image" ) itemCategoriesCombo.appendChild( an_option );
+		if( GroupName != "Image" && GroupName != "Plan") itemCategoriesCombo.appendChild( an_option );
 		for (let j = 0; j < Organization[GroupName].length; j++) {
 			an_option = document.createElement('OPTION');
 			an_option.value = Organization[GroupName][j];
@@ -1001,7 +1018,7 @@ function PopulateItemsList( JSONdata, Category, SearchString ) {
 			} else if( SearchString.length > 0 ) {
 				SearchString = SearchString.toLowerCase();
 				for (let key in JSONdata[i]) { 
-					if( key.includes("UUID")==false && key.includes("CoverageXYZ")==false) {
+					if( key.includes("UUID")==false ) {
 						if( typeof JSONdata[i][key]==="string" && JSONdata[i][key].toLowerCase().includes( SearchString ) ) {
 							include_in_list = true;
 							break;
@@ -1979,7 +1996,7 @@ function Change_User_Rights() {
 		ok = true;
 		UserName = prompt("Please enter the name of the user whose permissions you wish to alter:", "");
 		if( UserName.trim().length == 0 ) { ok = false; }
-		NewAccessString = prompt("Please enter the new access rights. \n(item types separated by commas, 'adddnew', 'del' or 'all'. Example: 'Feature,Coin,addnew')", "");
+		NewAccessString = prompt("Please enter the new access rights. \n(item types separated by commas, 'adddnew', 'del', 'all' or 'Coordinates'. Example: ',Feature,Coin,addnew,')", "");
 		if( NewAccessString.trim().length == 0 ) { ok = false; }
 		if( ok ) {
 			$.ajax({                                      
@@ -2072,3 +2089,11 @@ function Import_iDig_Images() {
 
 
 
+/**
+  * When the user presses the layers button (at the map tools) he can choose which layer to work with.
+  * This functions handles what happens when the user changes the layer value.
+  */
+function Handle_LayerSelection() {
+	Current_Layer = document.getElementById("Layers_slider").value;
+	map.drawWorld();
+}

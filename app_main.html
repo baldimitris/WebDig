@@ -60,7 +60,7 @@
 			<label for="AvailablePlansCombo" id="Label_Plan">Plan</label>
 			<select id="AvailablePlansCombo">
 			</select>
-			<button id="zoom_in_button"      class="canvasBtn" onclick="map.activate_ZoomIn();" title="Zoom In">    
+			<button id="zoom_in_button"      class="canvasBtn" onclick="map.activate_ZoomIn();" title="Zoom In">
 				<svg  width="22px" height="20px">
 				<circle style="fill:none;fill-rule:evenodd;stroke:#20b2aa;stroke-width:2.67808;stroke-miterlimit:4;stroke-dasharray:none" cx="8.7312508" cy="8.7312498" r="7.3922081" />
 				<path style="fill:none;stroke:#20b2aa;stroke-width:2.64583;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 14.108177,14.095127 5.008545,4.534163 0.764443,0.692042" inkscape:path-effect="#path-effect2796" inkscape:original-d="m 14.108177,14.095127 5.008545,4.534163 0.764443,0.692042" sodipodi:nodetypes="ccc" />
@@ -162,7 +162,7 @@
 					<path style="fill:#20b2aa;stroke:#20b2aa;stroke-width:1.043;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1" d="M 15.671892,12.81028 3.8150837,1.0041042 c 0,0 -2.3980061,1.5654593 -2.031644,3.8158076 C 2.1498018,7.0702599 12.308023,15.843358 12.308023,15.843358 Z"/>
 				</svg>
 			</button>
-			<button id="ruler_button"  class="canvasBtn" onclick="map.ToggleDisplayOfDistances();" title="Toggle displaying lengths of selected items on the map"> 
+			<button id="ruler_button"  class="canvasBtn" onclick="map.ToggleDisplayOfDistances();" title="Toggle displaying lengths of selected items. Clicking shows coordinates of point."> 
 				<svg width="22px" height="20px">			
 					<rect style="fill:#ffffff;stroke:#20b2aa;stroke-width:1.96323;stroke-dasharray:none" width="8.8887587" height="18.436768" x="5.2306204" y="1.161615" />
 					<path style="fill:none;stroke:#20b2aa;stroke-width:2.002;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1" d="M 5.4285069,4.6809976 H 10.585915" />
@@ -171,6 +171,8 @@
 					<path style="fill:none;stroke:#20b2aa;stroke-width:2.002;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1" d="M 5.4285069,16.268493 H 11.428584" />
 				</svg>
 			</button>
+			
+			<!-- Cooridnates related buttons!-->
 			<button id="target_button"  class="canvasBtn" onclick="map.ActivateDefiningCoordinatesManually();" title="This tool allows to define the coordinates of an item manually by clicking on the map."> 
 				<svg width="22px" height="20px">			
 					<ellipse style="fill:none;stroke:#20b2aa;stroke-width:2;stroke-dasharray:none" cx="14.492949" cy="4.6823087e-07" rx="9.2543478" ry="9.2543468" transform="matrix(0.70783071,0.70638211,-0.70783071,0.70638211,0,0)" />
@@ -179,6 +181,34 @@
 					<path style="fill:none;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1" d="m 13.588834,13.534486 3.314598,3.381306" />
 					<path style="fill:none;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1" d="M 17.017876,3.5182942 13.613139,6.8429185" />
 					<path style="fill:none;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-dasharray:none;stroke-opacity:1" d="M 7.0466169,13.489555 3.6418772,16.814179" />
+				</svg>
+			</button>
+			<button id="layers_button"  class="canvasBtn" onclick="map.activate_SelectLayer();" title="This tool allows to display different layers of the excavation items on the map."> 
+				<svg width="22px" height="20px">			
+					<rect style="fill:#ffffff;stroke:#20b2aa;stroke-width:2.41613054;stroke-miterlimit:4;stroke-dasharray:none" id="rect165-7" width="10.836235" height="10.836235" x="-18.032883" y="18.484861" rx="1.0157533" ry="1.0157533" transform="matrix(0.91268218,-0.40867008,0.91268218,0.40867008,0,0)" />
+					<rect style="fill:#ffffff;stroke:#20b2aa;stroke-width:2.41613054;stroke-miterlimit:4;stroke-dasharray:none" id="rect165-7-8" width="10.836235" height="10.836235" x="-11.339411" y="11.791405" rx="1.0157533" ry="1.0157533" transform="matrix(0.91268218,-0.40867009,0.91268218,0.40867009,0,0)" />
+					<rect style="fill:#ffffff;stroke:#20b2aa;stroke-width:2.41613054;stroke-miterlimit:4;stroke-dasharray:none" id="rect165-7-4" width="10.836235" height="10.836235" x="-5.2933731" y="5.7453742" rx="1.0157533" ry="1.0157533" transform="matrix(0.91268218,-0.40867009,0.91268218,0.40867009,0,0)" />
+				</svg>
+			</button>
+			<div id="Layers_rangePopover" class="popover" style="display:none;">
+			  <label for="Layers_slider">Layer depth:</label>
+			  <input type="range" id="Layers_slider" class="vertical_slider" min="0" max="10" value="0" onchange="Handle_LayerSelection();">
+			  <span id="Layers_rangeValue">0</span>
+			</div>
+			<button id="alter_a_coordinate_button"  class="canvasBtn" onclick="map.activate_AlterCoordinate();" title="This tool allows to change the coordinates of a single point of a selected item."> 
+				<svg width="22px" height="20px">			
+					<path style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 10.887292,10.825971 8.356356,-0.07257" id="path4719" inkscape:connector-curvature="0" />
+					<path style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="m 17.512996,13.342795 3.196535,-3.299163" id="path4719-6" inkscape:connector-curvature="0" />
+					<path inkscape:connector-curvature="0" id="path4751" d="M 20.691388,11.455906 17.494853,8.1567423" style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+					<path inkscape:connector-curvature="0" id="path4834" d="M 10.887292,10.825971 2.5309354,10.753401" style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+					<path inkscape:connector-curvature="0" id="path4836" d="M 4.2615874,13.342795 1.0650525,10.043632" style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+					<path style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="M 1.0831955,11.455906 4.2797304,8.1567423" id="path4838" inkscape:connector-curvature="0" />
+					<path style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="M 10.887292,10.825971 10.814722,2.4696144" id="path4719-5" inkscape:connector-curvature="0" />
+					<path style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="M 13.404116,4.2002664 10.104952,1.0037314" id="path4719-6-3" inkscape:connector-curvature="0" />
+					<path inkscape:connector-curvature="0" id="path4751-3" d="M 11.517226,1.0218754 8.2180629,4.2184094" style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+					<path inkscape:connector-curvature="0" id="path4834-2" d="m 10.887292,10.825971 -0.07257,8.356356" style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+					<path inkscape:connector-curvature="0" id="path4836-6" d="M 13.404116,17.451675 10.104952,20.64821" style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+					<path style="fill:#20b2aa;stroke:#20b2aa;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" d="M 11.517226,20.630068 8.2180629,17.433532" id="path4838-5" inkscape:connector-curvature="0" />
 				</svg>
 			</button>
 			
@@ -205,8 +235,6 @@
 					<a href="javascript:void(0);" onclick="Dialog.DisplayAboutDialog();">About</a>
 				</div>
 			</div>
-
-
 			
 			<div id="user_info">
 				<a href="javascript:void(0);" id="user_info_name" class="drop_downs" onclick="toggle_user_menu();"> Username </a>
@@ -273,7 +301,7 @@
 						<a href="javascript:void(0);" id="dropup_references"		onclick="Dialog.ShowReferenceLinksDialog();"		class='visible-to-users-only'>	<b>Reference Links</b></a>
 						<a href="javascript:void(0);" id="dropup_export" 			onclick="Dialog.ShowExportPreferencesDialog()"		class='visible-to-users-only'>	<b>Export data of selected items</b></a>
 						<a href="javascript:void(0);" id="dropup_trackchanges" 		onclick="getDataChanges_and_DisplayThem();"    		class='visible-to-admin-only'>	<b>Track Changes</b></a>
-						<a href="javascript:void(0);" id="dropup_mapcapture"	 	onclick="CaptureMap();"								class='visible-to-admin-only'>  <b>Map Capture</b></a>
+						<a href="javascript:void(0);" id="dropup_mapcapture"	 	onclick="CaptureMap();"								class='visible-to-users-only'>  <b>Map Capture</b></a>
 						</div>
 					</div>
 				</div>

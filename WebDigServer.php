@@ -1,6 +1,7 @@
 <?php
 // increase session timeout
 ini_set("session.gc_maxlifetime", 3600); 
+ini_set('serialize_precision','-1'); // instructing json encode to represent floats with few digits  
 
 // the maximum execution time (sec)
 set_time_limit( 300 );
@@ -730,7 +731,8 @@ if( strcmp($Command, "GetExcavationData") == 0 ) { // --------------------------
 		addUser( $_GET["username"], $_GET["password"], $_GET["access"] ); 
 		echo( "User '" . $_GET["username"] . "'  added to the system with password " . $_GET["password"] . " and access to " . $_GET["access"] .  ".");
 	} else if( strcmp($_GET["cmd"], "test") == 0 ) { // used for testing. example: WebDigServer.php?cmd=test
-		//echo "<br>Done.";
+		TEST();
+		echo "<br>Done.";
 	}
 }
 
@@ -1385,20 +1387,27 @@ function Import_iDig_Data() {
 		// ---- set Location based on CoverageXYZ field
 		if( isset($ExcData[$i]["Location"])==false && isset($ExcData[$i]["CoverageXYZ"]) ) { 
 			$coordinates_str = $ExcData[$i]["CoverageXYZ"];
-			$coordinates_str = substr( $coordinates_str, strrpos($coordinates_str, "(")+1 );
-			$coordinates_str = substr( $coordinates_str, 0, strpos($coordinates_str, ")") );
-			$Points = explode(',', $coordinates_str);
+			$coordinates_str = str_replace( "POINT", "POLYGON", $coordinates_str); // treat all as polygons
+			$Polygons_str = explode("POLYGON", $coordinates_str);
 			$ExcData[$i]["Location"] = [];
-			for ($j=0; $j<count($Points); $j++) {
-				$Points[$j] = trim( $Points[$j] );
-				$Coordinates = explode(' ', $Points[$j]);
-				$point_X = (float)$Coordinates[0];
-				$point_Y = (float)$Coordinates[1];
-				$point_Z = 0.0;
-				if( count($Coordinates) >= 3 ) $point_Z = (float)$Coordinates[2];
-				$XYZ_array = array( "X"=>$point_X, "Y"=>$point_Y, "Z"=>$point_Z );
-				array_push( $ExcData[$i]["Location"], $XYZ_array );
+			for ($p_idx=1; $p_idx<count($Polygons_str); $p_idx++) { // start from index 1 since only useful info lies only after the word POLYGON 
+				$Polygon_array = [];
+				$Polygons_str[$p_idx] = substr( $Polygons_str[$p_idx], strrpos($Polygons_str[$p_idx], "(")+1 );
+				$Polygons_str[$p_idx] = substr( $Polygons_str[$p_idx], 0, strpos($Polygons_str[$p_idx], ")") );
+				$Points = explode(',', $Polygons_str[$p_idx]);
+				for ($j=0; $j<count($Points); $j++) {
+					$Points[$j] = trim( $Points[$j] );
+					$Coordinates = explode(' ', $Points[$j]);
+					$point_X = (float)$Coordinates[0];
+					$point_Y = (float)$Coordinates[1];
+					$point_Z = 0.0;
+					if( count($Coordinates) >= 3 ) $point_Z = (float)$Coordinates[2];
+					$XYZ_array = array( "X"=>$point_X, "Y"=>$point_Y, "Z"=>$point_Z );
+					array_push( $Polygon_array, $XYZ_array );
+				}
+				array_push( $ExcData[$i]["Location"], $Polygon_array );
 			}
+			unset( $ExcData[$i]["CoverageXYZ"] );
 		}
 	}
 	// ------------ save ExcavationData.json
@@ -1445,6 +1454,43 @@ function Import_iDig_Data() {
 	return $Reply;
 }
 
+
+function TEST() {
+	$ExcData  = json_decode( file_get_contents("Data/ExcavationData.json"), true );
+	for ($i=0; $i<count($ExcData); $i++) {	// for each database item
+		// ---- set Location based on CoverageXYZ field
+		//if( isset($ExcData[$i]["Location"])==false && isset($ExcData[$i]["CoverageXYZ"]) ) { 
+		if( isset($ExcData[$i]["CoverageXYZ"]) ) {
+			$coordinates_str = $ExcData[$i]["CoverageXYZ"];
+			$coordinates_str = str_replace( "POINT", "POLYGON", $coordinates_str); // treat all as polygons
+			$Polygons_str = explode("POLYGON", $coordinates_str);
+			$ExcData[$i]["Location"] = [];
+			for ($p_idx=1; $p_idx<count($Polygons_str); $p_idx++) { // start from index 1 since only useful info lies only after the word POLYGON 
+				$Polygon_array = [];
+				$Polygons_str[$p_idx] = substr( $Polygons_str[$p_idx], strrpos($Polygons_str[$p_idx], "(")+1 );
+				$Polygons_str[$p_idx] = substr( $Polygons_str[$p_idx], 0, strpos($Polygons_str[$p_idx], ")") );
+				$Points = explode(',', $Polygons_str[$p_idx]);
+				for ($j=0; $j<count($Points); $j++) {
+					$Points[$j] = trim( $Points[$j] );
+					$Coordinates = explode(' ', $Points[$j]);
+					$point_X = (float)$Coordinates[0];
+					$point_Y = (float)$Coordinates[1];
+					$point_Z = 0.0;
+					if( count($Coordinates) >= 3 ) $point_Z = (float)$Coordinates[2];
+					$XYZ_array = array( "X"=>$point_X, "Y"=>$point_Y, "Z"=>$point_Z );
+					array_push( $Polygon_array, $XYZ_array );
+				}
+				array_push( $ExcData[$i]["Location"], $Polygon_array );
+			}
+			unset( $ExcData[$i]["CoverageXYZ"] );
+		} else if( isset($ExcData[$i]["Location"]) ) { // ONLY FOR PROCESSED DATA
+			debug_print( "Only Location: " . $ExcData[$i]["Identifier"] . "\n" );
+			$ExcData[$i]["Location"] = [ $ExcData[$i]["Location"] ];
+		}
+	}
+	// ------------ save ExcavationData.json
+	file_put_contents("Data/ExcavationData.json", json_encode($ExcData, JSON_PRETTY_PRINT), LOCK_EX);
+}
 
 
 /**

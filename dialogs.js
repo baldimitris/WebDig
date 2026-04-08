@@ -19,7 +19,7 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 			return;
 		}
 		// inform the map that the user has focused on this item and locus, so that they are colored differently
-		if (ItemData.hasOwnProperty("Location")) {
+		if (ItemData.hasOwnProperty("Location")  &&  ItemData["Location"].length > Current_Layer ) {
 			map.set_Focused_itemUUID( UUID );
 			map.drawWorld();
 		} else if (ItemData.hasOwnProperty("RelationBelongsToUUID")) {
@@ -215,15 +215,17 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 					s += "<div style='position:relative';>";
 					s += "<a href='#' onclick='";
 					s +=                "if (window.event.altKey) { AlterData(\"" + ItemData['IdentifierUUID'] + "\",\"ThumbnailImageUUID\",\"" + ImageNames[i] +"\"); Dialog.showItemDataDialog(\"" + ItemData['IdentifierUUID'] + "\");}";
-					if( TheUsername.localeCompare("Dimitrissssssssss") == 0 ) {
-						s +=                "else { window.open(\"image_viewer_with_tools.html" + "?img_uuid=" + ImageNames[i] + "\", \"_blank\").focus();}'";
+					
+					// ## for opening an image viewer with tools
+					//s +=                "else { window.open(\"image_viewer_with_tools.html" + "?img_uuid=" + ImageNames[i] + "\", \"_blank\").focus();}'";
+					
+					// ## for opening an image viewer without tools
+					if( image_json_data != null  &&  typeof image_json_data["FormatImageAnnotations"] != "undefined"  &&  image_json_data["FormatImageAnnotations"].length > 0 ) {
+						s +=            "else { window.open(\"image_viewer.html" + "?img_uuid=" + ImageNames[i] + "&item_uuid=" + ItemData['IdentifierUUID'] + "\", \"_blank\").focus();}'";
 					} else {
-						if( image_json_data != null  &&  typeof image_json_data["FormatImageAnnotations"] != "undefined"  &&  image_json_data["FormatImageAnnotations"].length > 0 ) {
-							s +=            "else { window.open(\"image_viewer.html" + "?img_uuid=" + ImageNames[i] + "&item_uuid=" + ItemData['IdentifierUUID'] + "\", \"_blank\").focus();}'";
-						} else {
-							s +=            "else { window.open(\"Data/images/" + ImageNames[i] + ".jpg\", \"_blank\").focus();}'";
-						}
+						s +=            "else { window.open(\"Data/images/" + ImageNames[i] + ".jpg\", \"_blank\").focus();}'";
 					}
+					
 					s += ">";
 					s += "<img src='Data/images/thumbnails/" + ImageNames[i]+".jpg" + "' title='" + ImageNames[i]  + " Alt+click (and Save) to set as default" + "' height='160px' class='dialog_item_image'";
 					
@@ -520,12 +522,12 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 		
 		// Action Buttons - Set Coordinates
 		if( TheAccessLevels.toLowerCase().includes(",all,") ) {
-			var SetCoordinatesBtn_HoverText = "Set New Coordinates";
+			var SetCoordinatesBtn_HoverText = "Set New Coordinates: Allows to draw a polygon and stores 2 layers of different depths. Old coordinates are deleted if exist.";
 			try {
-				if( ItemData["Location"] != null  &&  ItemData["Location"].length > 0 ) {
+				if(ItemData.hasOwnProperty("Location")  && ItemData["Location"].length > Current_Layer  &&  ItemData["Location"][Current_Layer].length > 0) {
 					SetCoordinatesBtn_HoverText += "\n\n";
-					for (let i=0; i<ItemData["Location"].length; i++) {
-						SetCoordinatesBtn_HoverText += ItemData["Location"][i]["X"] + " " + ItemData["Location"][i]["Y"] + " " + ItemData["Location"][i]["Z"] + "\n";
+					for (let i=0; i<ItemData["Location"][Current_Layer].length; i++) {
+						SetCoordinatesBtn_HoverText += ItemData["Location"][Current_Layer][i]["X"] + " " + ItemData["Location"][Current_Layer][i]["Y"] + " " + ItemData["Location"][Current_Layer][i]["Z"] + "\n";
 					}
 				}
 			} catch(ex) { }
@@ -1611,14 +1613,14 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 		//  calculate min and max coordinates of all selected polygons ------------
 		var minX = 9999999; var minY = 9999999; var minZ = 9999999; var maxX = -9999999; var maxY = -9999999; var maxZ = -9999999;
 		for (let i = 0; i < ExcData.length; i++) {
-			if( ExcData[i]["Selected"]  &&  typeof ExcData[i]["Location"] != "undefined"  &&  ExcData[i]["Location"].length > 1 ) { // this is a locus
-				for(let j=0; j<ExcData[i]["Location"].length; j++) {
-					if( minX > ExcData[i]["Location"][j]["X"] ) minX = ExcData[i]["Location"][j]["X"];
-					if( minY > ExcData[i]["Location"][j]["Y"] ) minY = ExcData[i]["Location"][j]["Y"];
-					if( minZ > ExcData[i]["Location"][j]["Z"] ) minZ = ExcData[i]["Location"][j]["Z"];
-					if( maxX < ExcData[i]["Location"][j]["X"] ) maxX = ExcData[i]["Location"][j]["X"];
-					if( maxY < ExcData[i]["Location"][j]["Y"] ) maxY = ExcData[i]["Location"][j]["Y"];
-					if( maxZ < ExcData[i]["Location"][j]["Z"] ) maxZ = ExcData[i]["Location"][j]["Z"];
+			if( ExcData[i]["Selected"]  &&  ExcData[i].hasOwnProperty("Location")  &&  ExcData[i]["Location"].length > Current_Layer  &&  ExcData[i]["Location"][Current_Layer].length > 1) { // this is a selected locus
+				for(let j=0; j<ExcData[i]["Location"][Current_Layer].length; j++) {
+					if( minX > ExcData[i]["Location"][Current_Layer][j]["X"] ) minX = ExcData[i]["Location"][Current_Layer][j]["X"];
+					if( minY > ExcData[i]["Location"][Current_Layer][j]["Y"] ) minY = ExcData[i]["Location"][Current_Layer][j]["Y"];
+					if( minZ > ExcData[i]["Location"][Current_Layer][j]["Z"] ) minZ = ExcData[i]["Location"][Current_Layer][j]["Z"];
+					if( maxX < ExcData[i]["Location"][Current_Layer][j]["X"] ) maxX = ExcData[i]["Location"][Current_Layer][j]["X"];
+					if( maxY < ExcData[i]["Location"][Current_Layer][j]["Y"] ) maxY = ExcData[i]["Location"][Current_Layer][j]["Y"];
+					if( maxZ < ExcData[i]["Location"][Current_Layer][j]["Z"] ) maxZ = ExcData[i]["Location"][Current_Layer][j]["Z"];
 				}
 			}
 		}
@@ -1627,16 +1629,16 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 		var Fy = (PlanMaxY-PlanMinY) / (PlanImageHeight*ZoomFactor);
 		// check if there are any selected item which intersect with the user-drawn cross section.
 		for (let i = 0; i < ExcData.length; i++) {
-			if( ExcData[i]["Selected"]  &&  typeof ExcData[i]["Location"] != "undefined"  &&  ExcData[i]["Location"].length > 1 ) { // this is a locus
+			if( ExcData[i]["Selected"]  &&  ExcData[i].hasOwnProperty("Location")  &&  ExcData[i]["Location"].length > Current_Layer  &&  ExcData[i]["Location"][Current_Layer].length > 1) { // this is a selected locus
 				// ---- calculate the interestions between the cross-section and the item's polygons
 				var CS = new CrossSection( ExcData[i], section_x1, section_y1, section_x2, section_y2 );
 				var CS_result = CS.CalcCrossSection();
 				if( CS_result.length <= 0 ) continue; // <<< no intersection found with this item
 				// ---- correct distances to represent reality and round to 2 digits 
-				for (let corner_idx=0; corner_idx<CS_result.length; corner_idx++) { 
+				for (let corner_idx=0; corner_idx<CS_result.length; corner_idx++) {
 					CS_result[corner_idx]["X"] = (Fx*CS_result[corner_idx]["X"]).toFixed(2);
 					CS_result[corner_idx]["Y"] = (Fy*CS_result[corner_idx]["Y"]).toFixed(2) - PlanMinY;
-					CS_result[corner_idx]["Z"] = CS_result[corner_idx]["Z"].toFixed(2); // make depth negative so that it is plotted correctly
+					if(CS_result[corner_idx].hasOwnProperty("Z")) CS_result[corner_idx]["Z"] = CS_result[corner_idx]["Z"].toFixed(2); // make depth negative so that it is plotted correctly
 				}
 				// ******** create coordinates for the 2D plot for this item
 				// compute the center point
@@ -1742,14 +1744,14 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 				// ------------ calculate min and max coordinates of all selected polygons ------------
 				var minX = 9999999; var minY = 9999999; var minZ = 9999999; var maxX = -9999999; var maxY = -9999999; var maxZ = -9999999;
 				for (let i = 0; i < ExcData.length; i++) {
-					if( ExcData[i]["Selected"]  &&  typeof ExcData[i]["Location"] != "undefined"  &&  ExcData[i]["Location"].length > 1 ) { // this is a locus
-						for(let j=0; j<ExcData[i]["Location"].length; j++) {
-							if( minX > ExcData[i]["Location"][j]["X"] ) minX = ExcData[i]["Location"][j]["X"];
-							if( minY > ExcData[i]["Location"][j]["Y"] ) minY = ExcData[i]["Location"][j]["Y"];
-							if( minZ > ExcData[i]["Location"][j]["Z"] ) minZ = ExcData[i]["Location"][j]["Z"];
-							if( maxX < ExcData[i]["Location"][j]["X"] ) maxX = ExcData[i]["Location"][j]["X"];
-							if( maxY < ExcData[i]["Location"][j]["Y"] ) maxY = ExcData[i]["Location"][j]["Y"];
-							if( maxZ < ExcData[i]["Location"][j]["Z"] ) maxZ = ExcData[i]["Location"][j]["Z"];
+					if( ExcData[i]["Selected"]  &&  ExcData[i].hasOwnProperty("Location")  &&  ExcData[i]["Location"].length > Current_Layer  &&  ExcData[i]["Location"][Current_Layer].length > 1 ) { // this is a selected locus
+						for(let j=0; j<ExcData[i]["Location"][Current_Layer].length; j++) {
+							if( minX > ExcData[i]["Location"][Current_Layer][j]["X"] ) minX = ExcData[i]["Location"][Current_Layer][j]["X"];
+							if( minY > ExcData[i]["Location"][Current_Layer][j]["Y"] ) minY = ExcData[i]["Location"][Current_Layer][j]["Y"];
+							if( minZ > ExcData[i]["Location"][Current_Layer][j]["Z"] ) minZ = ExcData[i]["Location"][Current_Layer][j]["Z"];
+							if( maxX < ExcData[i]["Location"][Current_Layer][j]["X"] ) maxX = ExcData[i]["Location"][Current_Layer][j]["X"];
+							if( maxY < ExcData[i]["Location"][Current_Layer][j]["Y"] ) maxY = ExcData[i]["Location"][Current_Layer][j]["Y"];
+							if( maxZ < ExcData[i]["Location"][Current_Layer][j]["Z"] ) maxZ = ExcData[i]["Location"][Current_Layer][j]["Z"];
 						}
 					}
 				}
@@ -1758,7 +1760,7 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 				var MyColors_idx = 0;
 				var plot3dX=[], plot3dY=[], plot3dZ=[], plot3dData=[];
 				for (let i = 0; i < ExcData.length; i++) {
-					if( ExcData[i]["Selected"]  &&  typeof ExcData[i]["Location"] != "undefined"  &&  ExcData[i]["Location"].length > 1 ) { // this is a locus
+					if( ExcData[i]["Selected"]  &&  ExcData[i].hasOwnProperty("Location")  &&  ExcData[i]["Location"].length > Current_Layer &&  ExcData[i]["Location"][Current_Layer].length > 1 ) { // this is a selected locus
 						var CS = new CrossSection( ExcData[i], CrossSectionX1, CrossSectionY1, CrossSectionX2, CrossSectionY2 );
 						var ItemPolygons = CS.getItemPolygons();
 						plot3dX=[]; plot3dY=[]; plot3dZ=[];
@@ -1774,8 +1776,8 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 						var trace = {x:plot3dX, y:plot3dY, z:plot3dZ, name:ExcData[i]["Identifier"], showlegend:true, mode:'lines', line:{width:3, color:MyColors[MyColors_idx]}, type:'scatter3d' };
 						plot3dData.push( trace );
 						MyColors_idx++;
-					} else if( ExcData[i]["Selected"]  &&  typeof ExcData[i]["Location"] != "undefined"  &&  ExcData[i]["Location"].length == 1 ) { // this is an artifact
-						var trace = {x:[ExcData[i]["Location"][0]["X"]-PlanMinX], y:[PlanMaxY-ExcData[i]["Location"][0]["Y"]], z:[ExcData[i]["Location"][0]["Z"]], text:ExcData[i]["Identifier"], showlegend:false, mode: 'markers+text', marker:{color:COLOR_artifact,width:5,symbol:'circle',line:{color:COLOR_artifact,width:1},opacity:0.8}, type:'scatter3d'};
+					} else if( ExcData[i]["Selected"]  &&  ExcData[i].hasOwnProperty("Location")  &&  ExcData[i]["Location"].length > Current_Layer  &&  ExcData[i]["Location"][Current_Layer].length == 1 ) { // this is a selected artifact (single point)
+						var trace = {x:[ExcData[i]["Location"][Current_Layer][0]["X"]-PlanMinX], y:[PlanMaxY-ExcData[i]["Location"][Current_Layer][0]["Y"]], z:[ExcData[i]["Location"][Current_Layer][0]["Z"]], text:ExcData[i]["Identifier"], showlegend:false, mode: 'markers+text', marker:{color:COLOR_artifact,width:5,symbol:'circle',line:{color:COLOR_artifact,width:1},opacity:0.8}, type:'scatter3d'};
 						plot3dData.push( trace );
 					}
 				}

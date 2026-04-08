@@ -37,6 +37,13 @@ var CrossSectionY1 = -1;
 var CrossSectionX2 = -1;
 var CrossSectionY2 = -1;
 var CrossSectionShapes = [];
+// layers related
+var Max_num_of_Layers = 1;
+var Current_Layer = 0; // 0 is the first layer, that is the first polygon described in "Location" field of the database
+// coordinate-altering related
+var CoordinateAltering_SelectedPointIdx = -1;
+var CoordinateAltering_SelectedItemIdx = -1;
+var CoordinateAltering_SelectedItemData_Backup = null;
 // ReferenceLinks-related
 var ReferenceLinks = null;//theReferenceLinks = new ReferenceLinks_class();
 // user-related

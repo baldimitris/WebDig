@@ -90,6 +90,20 @@ class Map {
 		document.body.addEventListener("touchmove", function (e) {
 			if (e.target == canvas) { e.preventDefault(); }
 		}, false);
+		
+		
+		// ------------ FOR LAYERS: add event listener for updating the number display when the range slider moves
+		document.getElementById('Layers_slider').addEventListener('input', () => {
+			document.getElementById('Layers_rangeValue').textContent = document.getElementById('Layers_slider').value;
+		});
+
+		// ------------ FOR LAYERS: Close range slider if clicking outside
+		window.addEventListener('click', (e) => {
+			if (!document.getElementById('layers_button').contains(e.target) && !document.getElementById('Layers_rangePopover').contains(e.target)) {
+				document.getElementById('Layers_rangePopover').style.display = 'none';
+			}
+		});
+		
 	}
 
 	
@@ -165,13 +179,40 @@ class Map {
 		ZoomFactor = 0.1;
 		this.drawWorld();
 	}
+	
+
+	/**
+	  * draws an arrow on the canvas, based on the arguments
+	  */
+	draw_arrow(ctx, fromX, fromY, toX, toY, lineWidth, lineColor) {	
+		const headLength = 15; // Adjusted for better visibility
+		const angle = Math.atan2(toY - fromY, toX - fromX);
+		// init
+		ctx.save(); // Save state to avoid polluting global styles
+		ctx.beginPath();
+		ctx.strokeStyle = lineColor;
+		ctx.lineWidth = lineWidth;
+		ctx.lineCap = "round"; // Makes the tip and joints look smoother
+		ctx.lineJoin = "round";
+		// 1. Draw the main shaft
+		ctx.moveTo(fromX, fromY);
+		ctx.lineTo(toX, toY);
+		// 2. Draw first wing
+		ctx.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), toY - headLength * Math.sin(angle - Math.PI / 6));
+		// 3. Move back to the tip to draw the second wing
+		ctx.moveTo(toX, toY);
+		ctx.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), toY - headLength * Math.sin(angle + Math.PI / 6));
+		// draw
+		ctx.stroke();
+		ctx.restore();
+	}
 
 
 	/**
 	 * Draws all elements on the canvas, based on selected tool, selected items etc.
 	 */
 	drawWorld() {
-		var x, y;
+		var x=0, y=0, map_x=0, map_y=0;
 		// make the canvas size equal to its drawing size
 		this.canvas.width  = this.canvas.offsetWidth;
 		this.canvas.height = this.canvas.offsetHeight;
@@ -193,6 +234,22 @@ class Map {
 			this.context.fill();
 			this.context.stroke();
 		}		
+		
+		// draw coordinates of the clicked point if the ruler is activated
+		if( this.DisplayDistances  &&  MouseX > 0  &&  MouseY > 0) {
+			this.context.beginPath();
+			this.context.font = "bold 16px Arial";
+			this.context.strokeStyle = "black";
+			this.context.fillStyle = "black";
+			map_x = this.map_range( (MouseX-CanvasOffsetX)/ZoomFactor,  0, PlanImageWidth, 	  PlanMinX, PlanMaxX);
+			map_y = this.map_range( (MouseY-CanvasOffsetY)/ZoomFactor,  PlanImageHeight, 0,   PlanMinY, PlanMaxY); 
+			map_x = map_x.toFixed(3);
+			map_y = map_y.toFixed(3);
+			this.context.fillText("Clicked Coordinates: " + map_x + " " + map_y, 20, 20);
+			this.context.closePath();
+			this.context.fill();
+		}
+		
 		// draw dimensions of the plan
 		if( this.DisplayDistances && PlanImageWidth>0) {
 			var W = PlanImageWidth  * ZoomFactor;
@@ -226,7 +283,7 @@ class Map {
 					/// check if this item should be displayed on the map or not
 					var display_current_item = false;
 					var focus_on_current_item = false;
-					if(  typeof ExcData[i]["Location"]!="undefined"  &&  ExcData[i]["Location"].length > 0 ) {
+					if( ExcData[i].hasOwnProperty("Location") && ExcData[i]["Location"].length > Current_Layer ) {
 						if( this.DisplayOnlySelectedItemsOnMap ) {
 							if( ExcData[i]["Selected"] ) display_current_item = true;
 						} else {
@@ -237,7 +294,6 @@ class Map {
 							display_current_item = true;
 							focus_on_current_item = true;
 						}
-						
 						if( display_current_item && ExcData[i].hasOwnProperty("InPlan") ) {
 							if( ExcData[i]["InPlan"]==false ) { 
 								display_current_item = false;
@@ -246,11 +302,10 @@ class Map {
 						}
 					}
 					///
-					if( display_current_item ) {
-						var LocationMatrix = ExcData[i]["Location"];
+					if( display_current_item  &&  ExcData[i]["Location"].length > Current_Layer ) {
+						var LocationMatrix = ExcData[i]["Location"][Current_Layer];
 						// set type-related properties
 						var itemcolor = getItemColor( ExcData[i]["Type"], ExcData[i]["Category"] );
-						var x=0, y=0, map_x=0, map_y=0;
 						// draw
 						if( LocationMatrix.length == 1 ) { // it is just a point on the map
 							x = parseFloat( LocationMatrix[0]["X"] );
@@ -260,6 +315,7 @@ class Map {
 								this.context.strokeStyle = COLOR_focused;
 								this.context.lineWidth = 5;
 							} else if( ExcData[i]["Selected"] ) {
+								// highlight the selected items
 								this.context.strokeStyle = COLOR_selected;
 								this.context.lineWidth = 3;
 							} else {
@@ -288,7 +344,7 @@ class Map {
 							}
 							this.context.beginPath();
 							this.context.moveTo(map_x, map_y);
-							for(let pointIdx=1; pointIdx<LocationMatrix.length; pointIdx++) {
+							for(let pointIdx=1; pointIdx<LocationMatrix.length; pointIdx++) {								
 								x = LocationMatrix[pointIdx]["X"];
 								y = LocationMatrix[pointIdx]["Y"];
 								map_x = this.map_range(x,  PlanMinX, PlanMaxX,   0   ,  PlanImageWidth) * ZoomFactor + CanvasOffsetX;
@@ -352,13 +408,53 @@ class Map {
 							this.context.stroke();
 						}
 						
+						//// ~~~~ when in "alter_a_coordinate" state, then highlight the point selected by the user to alter its coordinates
+						if( map.CanvasState.startsWith("alter_a_coordinate")  &&  ExcData[i]["Location"].length > Current_Layer ) {
+							// locate the selected element
+							var the_selected_item = ExcData[CoordinateAltering_SelectedItemIdx];
+							// calculate the position of the selected point on the map
+							ExcData[i]["Location"][Current_Layer][CoordinateAltering_SelectedPointIdx]
+							x = the_selected_item["Location"][Current_Layer][CoordinateAltering_SelectedPointIdx]["X"];
+							y = the_selected_item["Location"][Current_Layer][CoordinateAltering_SelectedPointIdx]["Y"];
+							map_x = this.map_range(x,  PlanMinX, PlanMaxX,   0              , PlanImageWidth) * ZoomFactor + CanvasOffsetX;
+							map_y = this.map_range(y,  PlanMinY, PlanMaxY,   PlanImageHeight,              0) * ZoomFactor + CanvasOffsetY;
+							// highlight the selected point
+							this.context.beginPath();
+							this.context.strokeStyle = "mediumvioletred";
+							this.context.fillStyle = "mediumvioletred";
+							this.context.lineWidth = 1;
+							this.context.arc(map_x, map_y, 1, 0, 2*Math.PI);
+							this.context.fill(); 
+							this.context.stroke(); 
+							this.context.beginPath();
+							this.context.lineWidth = 3;
+							this.context.arc(map_x, map_y, 8, 0, 2*Math.PI);
+							this.context.stroke(); 
+							this.num_of_drawables_OnCanvas++;
+						}
+						
 						//// ~~~~~~~~~~~~~~~~ draw Highlight of a point on map ~~~~~~~~~~~~~~~~~~~~
 						if( this.currentHighlightAlpha > 0   &&   ExcData[i]["IdentifierUUID"].localeCompare(this.Highlight_itemUUID)==0 ) {
-							// move map so that the highlighted item is visible
-							if(map_x > this.canvas.width-20)  CanvasOffsetX = CanvasOffsetX + map_x - this.canvas.width - this.canvas.width/2;
-							if(map_y > this.canvas.height-20) CanvasOffsetY = CanvasOffsetY + map_y - this.canvas.height - this.canvas.height/2;
-							if(map_x < 0)                CanvasOffsetX = CanvasOffsetX - map_x + this.canvas.width/2;
-							if(map_y < 0) 				 CanvasOffsetY = CanvasOffsetY - map_y + this.canvas.height/2;
+							// Instead of moving the map, draw an arrow from the map center towards the selected item
+							// Move map so that the highlighted item is visible
+							// if(map_x > this.canvas.width-20)  CanvasOffsetX = CanvasOffsetX + map_x - this.canvas.width - this.canvas.width/2;
+							// if(map_y > this.canvas.height-20) CanvasOffsetY = CanvasOffsetY + map_y - this.canvas.height - this.canvas.height/2;
+							// if(map_x < 0)                CanvasOffsetX = CanvasOffsetX - map_x + this.canvas.width/2;
+							// if(map_y < 0) 				 CanvasOffsetY = CanvasOffsetY - map_y + this.canvas.height/2;
+							
+							// If the selected item is not visible to the current map area then draw an arrow from the map center towards the selected item
+							if(map_x > this.canvas.width-50 || map_x < 50 || map_y > this.canvas.height-50 || map_y < 50) {
+								this.context.globalAlpha = this.currentHighlightAlpha;
+								var arrow_length = 60;
+								var fromX = 120;
+								var fromY = 120;
+								var sin_phi = Math.abs(map_y-fromY) / Math.sqrt((map_y-fromY)*(map_y-fromY) + (map_x-fromX)*(map_x-fromX));
+								var cos_phi = Math.abs(map_x-fromX) / Math.sqrt((map_y-fromY)*(map_y-fromY) + (map_x-fromX)*(map_x-fromX));
+								var toX = fromX - Math.sign(fromX-map_x) * arrow_length * cos_phi;
+								var toY = fromY - Math.sign(fromY-map_y) * arrow_length * sin_phi;
+								this.draw_arrow(this.context, fromX, fromY, toX, toY, 8, COLOR_highlight);
+							}
+							
 							// draw a vertical and a horizontal line towards the item
 							this.context.beginPath();
 							this.context.globalAlpha = this.currentHighlightAlpha;
@@ -399,10 +495,13 @@ class Map {
 						}
 					}					
 					
-				} catch(ex) { }
+				} catch(ex) {
+					//console.log(">>> " + ex.toString());
+				}
 			}
 		}
 		
+				
 		// draw cross section line
 		if( this.CanvasState.localeCompare("crosssection")==0 ) {
 			if( CrossSectionX1 >= 0  &&  CrossSectionX2 < 0 ) {
@@ -524,6 +623,21 @@ class Map {
 				this.context.stroke();
 			}
 		}
+		
+		if( map != null  &&  map.CanvasState.startsWith("alter_a_coordinate") ) {
+			// display help message
+			this.context.beginPath();
+			this.context.font = "bold 16px Arial";
+			this.context.strokeStyle = "mediumvioletred";
+			this.context.fillStyle = "mediumvioletred";
+			if( CoordinateAltering_SelectedPointIdx < 0 ) {
+				this.context.fillText("Altering coordinates: Move a point by click and drag. ESC:cancel ENTER:save PLUS:add_point MINUS:del_point D:set_depth", 10, 20);
+			} else {
+				this.context.fillText("Altering coordinates of " + CoordinateAltering_SelectedItemData_Backup["Identifier"]+ ", point #" + CoordinateAltering_SelectedPointIdx + ": Move point by click and drag. ESC:cancel ENTER:save PLUS:add_point MINUS:del_point D:set_depth", 10, 20);
+			}
+			this.context.closePath();
+			this.context.fill();
+		}
 	}	
 
 
@@ -542,6 +656,7 @@ class Map {
 			try {
 				this.context.drawImage(PlanImage, CanvasOffsetX, CanvasOffsetY, PlanImage.width * ZoomFactor, PlanImage.height * ZoomFactor );
 			} catch( ex ) {
+				console.log("Plan image was not found: " + PlanTitle);
 				this.context.fillStyle = "red";
 				this.context.fillText( "Plan image was not found", 10, 36);
 				this.context.fill();
@@ -630,16 +745,16 @@ class Map {
 		var num_of_intersections = 0;
 		for (let i = 0; i < ExcData.length; i++) {
 			try {
-				if( ExcData[i]["Selected"]  &&  typeof ExcData[i]["Location"] != "undefined"  &&  ExcData[i]["Location"].length > 1 ) { // this is a visible locus
+				if( ExcData[i]["Selected"]  &&  ExcData[i].hasOwnProperty("Location")  &&  ExcData[i]["Location"].length > Current_Layer  &&  ExcData[i]["Location"][Current_Layer].length > 1 ) { // this is a visible locus
 					var json_shape = {};
 					json_shape["ID"] = ExcData[i]["Identifier"];
 					json_shape["POLYGON"] = [];
-					for(let pointIdx=1; pointIdx<ExcData[i]["Location"].length; pointIdx++) {
+					for(let pointIdx=1; pointIdx<ExcData[i]["Location"][Current_Layer].length; pointIdx++) {
 						// calculate the coordinates of each edge of the item
-						var edge_x1 = ExcData[i]["Location"][pointIdx-1]["X"];
-						var edge_y1 = ExcData[i]["Location"][pointIdx-1]["Y"];
-						var edge_x2 = ExcData[i]["Location"][pointIdx]["X"];
-						var edge_y2 = ExcData[i]["Location"][pointIdx]["Y"];
+						var edge_x1 = ExcData[i]["Location"][Current_Layer][pointIdx-1]["X"];
+						var edge_y1 = ExcData[i]["Location"][Current_Layer][pointIdx-1]["Y"];
+						var edge_x2 = ExcData[i]["Location"][Current_Layer][pointIdx]["X"];
+						var edge_y2 = ExcData[i]["Location"][Current_Layer][pointIdx]["Y"];
 						var edge_x1 = this.map_range(edge_x1,  PlanMinX, PlanMaxX,                0,   PlanImageWidth) * ZoomFactor + CanvasOffsetX;
 						var edge_y1 = this.map_range(edge_y1,  PlanMinY, PlanMaxY,   PlanImageHeight,               0) * ZoomFactor + CanvasOffsetY;
 						var edge_x2 = this.map_range(edge_x2,  PlanMinX, PlanMaxX,                0,   PlanImageWidth) * ZoomFactor + CanvasOffsetX;
@@ -659,15 +774,17 @@ class Map {
 						}
 						// calculate the underground intersection points
 						if( intersectionX != null ) { // the cross-section intersects with this edge
-							var edge_z1 = ExcData[i]["Location"][pointIdx-1]["Z"];
-							var edge_z2 = ExcData[i]["Location"][pointIdx]["Z"];
+							var edge_z1 = ExcData[i]["Location"][Current_Layer][pointIdx-1]["Z"];
+							var edge_z2 = ExcData[i]["Location"][Current_Layer][pointIdx]["Z"];
 							var intersectionZ = (edge_z2-edge_z1)*(intersectionX-edge_x1)/(edge_x2-edge_x1) + edge_z1;
 							json_shape["POLYGON"].push( {X:intersectionX, Y:intersectionY, Z:intersectionZ} );
 						}
 					}
 					if( json_shape["POLYGON"].length > 0 ) CrossSectionShapes.push( json_shape );
 				}
-			} catch( ex ) { console.log(ex); }
+			} catch( ex ) { 
+				//console.log(">>" + ex.toString); 
+			}
 		}
 	}
 
@@ -743,21 +860,56 @@ class Map {
 		// for defining the coordinates points when ManualCoordinatesMode and the target button is active
 		if( map.ManualCoordinatesMode  &&  map.CanvasState.localeCompare("defining-coordinates-manually") == 0 ) {
 			// calculate the manually designated coordinates
-			var tmp = "";
-			tmp += "(" + MouseX + ", " + MouseY + ") ";
+			//var tmp = "";
+			//tmp += "(" + MouseX + ", " + MouseY + ") ";
 			var map_x = map.map_range(MouseX-CanvasOffsetX,  0, PlanImageWidth  * ZoomFactor,  PlanMinX, PlanMaxX);
 			var map_y = map.map_range(MouseY-CanvasOffsetY,  0, PlanImageHeight * ZoomFactor,  PlanMaxY, PlanMinY);
-			tmp += " --> (" + map_x + " " + map_y + ")   Offset: " + CanvasOffsetX + " " + CanvasOffsetY;
+			//tmp += " --> (" + map_x + " " + map_y + ")   Offset: " + CanvasOffsetX + " " + CanvasOffsetY;
 			// remember the manually designated coordinate
 			map.ManualCoordinates.push( {"X":map_x, "Y":map_y} );
 			// print the manually designated coordinates and refresh
-			console.log(tmp);
+			//console.log(tmp);
+			map.drawWorld();
+		}
+		
+		// for altering the X-Y coordinates of a single point
+		if( MouseIsDown && map.CanvasState.startsWith("alter_a_coordinate") ) {
+			// locate the point which the user has clicked - it will be highlighted and allowed to be dragged to a different place
+			MouseX = eventX - map.canvas.getBoundingClientRect().left;
+			MouseY = eventY - map.canvas.getBoundingClientRect().top;
+			var SelectedItem = ExcData[CoordinateAltering_SelectedItemIdx];
+			if( SelectedItem.hasOwnProperty("Location")  &&  SelectedItem["Location"].length > Current_Layer) { 
+				var min_distance = 999999999;
+				for (let idx = 0; idx < SelectedItem["Location"][Current_Layer].length; idx++) { // find out the point of the item which is closer to the mouse click
+					var point_x = SelectedItem["Location"][Current_Layer][idx]["X"];
+					var point_y = SelectedItem["Location"][Current_Layer][idx]["Y"];
+					var map_x = map.map_range(MouseX-CanvasOffsetX,  0, PlanImageWidth  * ZoomFactor,  PlanMinX, PlanMaxX);
+					var map_y = map.map_range(MouseY-CanvasOffsetY,  0, PlanImageHeight * ZoomFactor,  PlanMaxY, PlanMinY);
+					var distance = Math.sqrt( (map_x-point_x)*(map_x-point_x) + (map_y-point_y)*(map_y-point_y) );
+					if( distance < min_distance ) {
+						min_distance = distance;
+						CoordinateAltering_SelectedPointIdx = idx;
+					}
+				}
+			}
+			// update map
 			map.drawWorld();
 		}
 	}
+	
 
 	/** Event Handler: Handles the mouse up event on the map */
 	Canvas_MouseUpHandler(e) {
+		// figure out where the user clicked
+		var eventX, eventY;
+		if( Utils.Am_I_running_on_mobile_device() ) {
+			eventX = e.touches[0].clientX;
+			eventY = e.touches[0].clientY;
+		} else {
+			eventX = e.clientX;
+			eventY = e.clientY;
+		}
+		////
 		if( e.ctrlKey ) {
 			// do something in the future
 		}
@@ -766,6 +918,10 @@ class Map {
 			if( e.ctrlKey ) { map.ZoomIn(4); }  else { map.ZoomIn(); }
 		} else if( MouseIsDown && map.CanvasState.localeCompare("zoomout") == 0 ) {
 			if( e.ctrlKey ) { map.ZoomOut(4); }  else { map.ZoomOut(); }
+		} else if( MouseIsDown && map.CanvasState.startsWith("displaydistances") ) {
+			MouseX = eventX - map.canvas.getBoundingClientRect().left;
+			MouseY = eventY - map.canvas.getBoundingClientRect().top;
+			map.drawWorld();
 		} else if( MouseIsDown && map.CanvasState.startsWith("select") ) {
 			MouseIsDown = false;
 			if( MouseStartX==MouseX && MouseStartY==MouseY) { // it is just a click, select close neighbors
@@ -785,7 +941,7 @@ class Map {
 				try {
 					// check if this item is displayed on the map or not
 					var current_item_is_displayed_on_map = false;
-					if( ExcData[i]["Location"].length > 0 ) {
+					if( ExcData[i].hasOwnProperty("Location")  &&  ExcData[i]["Location"].length > Current_Layer ) {
 						if( map.DisplayOnlySelectedItemsOnMap ) {
 							if( ExcData[i]["Selected"] ) current_item_is_displayed_on_map = true;
 						} else {
@@ -797,9 +953,9 @@ class Map {
 					}
 					// check if the item's Selected-state has to be altered 
 					if( current_item_is_displayed_on_map ) {
-						for(let j=0; j<ExcData[i]["Location"].length; j++ ) {
-							let X = ExcData[i]["Location"][j]["X"]; 
-							let Y = ExcData[i]["Location"][j]["Y"];
+						for(let j=0; j<ExcData[i]["Location"][Current_Layer].length; j++ ) {
+							let X = ExcData[i]["Location"][Current_Layer][j]["X"]; 
+							let Y = ExcData[i]["Location"][Current_Layer][j]["Y"];
 							X = map.map_range(X,  PlanMinX, PlanMaxX,   0,      PlanImageWidth) * ZoomFactor + CanvasOffsetX;
 							Y = map.map_range(Y,  PlanMinY, PlanMaxY,   PlanImageHeight,     0) * ZoomFactor + CanvasOffsetY; 
 							if( X >= minX  &&  X <= maxX  &&  Y >= minY  &&  Y <= maxY ) {
@@ -822,7 +978,10 @@ class Map {
 							}
 						}
 					}
-				} catch( ex ) { }
+				} catch( ex ) { 
+					//console.log(">>>> " + ex.toString() + " :: " );
+					//console.log(">>>>Z " + ExcData[i]["Identifier"] );
+				}
 			}
 			updateInfoBar();
 			map.drawWorld();
@@ -834,7 +993,7 @@ class Map {
 				try {
 					// check if this item is displayed on the map or not
 					var current_item_is_displayed_on_map = false;
-					if( ExcData[i]["Location"].length > 0 ) {
+					if( ExcData[i].hasOwnProperty("Location")  &&  ExcData[i]["Location"].length > Current_Layer ) {
 						if( map.DisplayOnlySelectedItemsOnMap ) {
 							if( ExcData[i]["Selected"] ) current_item_is_displayed_on_map = true;
 						} else {
@@ -846,36 +1005,38 @@ class Map {
 					}
 					// check if the item's Selected-state has to be altered 
 					if( current_item_is_displayed_on_map ) {
-						for(let j=0; j<ExcData[i]["Location"].length; j++ ) {
-						for(let idx=0; idx<PencilPath.length; idx++) {	
-							var X = ExcData[i]["Location"][j]["X"]; 
-							var Y = ExcData[i]["Location"][j]["Y"];
-							X = map.map_range(X,  PlanMinX, PlanMaxX,   0   ,   PlanImageWidth) * ZoomFactor + CanvasOffsetX;
-							Y = map.map_range(Y,  PlanMinY, PlanMaxY,   PlanImageHeight,     0) * ZoomFactor + CanvasOffsetY; 
-							var Distance = Math.sqrt( (X-PencilPath[idx]["x"])**2 + (Y-PencilPath[idx]["y"])**2 );
-							if( Distance < PencilSelectionWidth/2 ) {
-								if( map.CanvasState.localeCompare("pencil") == 0  ||  map.CanvasState.localeCompare("pencilplus") == 0 ) {
-									if( ExcData[i]["Selected"] != true ) {
-										ExcData[i]["Selected"] = true;
-										num_of_selected_items += 1;
+						for(let j=0; j<ExcData[i]["Location"][Current_Layer].length; j++ ) {
+							for(let idx=0; idx<PencilPath.length; idx++) {	
+								var X = ExcData[i]["Location"][Current_Layer][j]["X"]; 
+								var Y = ExcData[i]["Location"][Current_Layer][j]["Y"];
+								X = map.map_range(X,  PlanMinX, PlanMaxX,   0   ,   PlanImageWidth) * ZoomFactor + CanvasOffsetX;
+								Y = map.map_range(Y,  PlanMinY, PlanMaxY,   PlanImageHeight,     0) * ZoomFactor + CanvasOffsetY; 
+								var Distance = Math.sqrt( (X-PencilPath[idx]["x"])**2 + (Y-PencilPath[idx]["y"])**2 );
+								if( Distance < PencilSelectionWidth/2 ) {
+									if( map.CanvasState.localeCompare("pencil") == 0  ||  map.CanvasState.localeCompare("pencilplus") == 0 ) {
+										if( ExcData[i]["Selected"] != true ) {
+											ExcData[i]["Selected"] = true;
+											num_of_selected_items += 1;
+										}
+										// scroll list to the first selected item 
+										if( num_of_selected_items == 1 ) {
+											Scroll_ItemsList( ExcData[i]["IdentifierUUID"] );
+										}
+									} else if( map.CanvasState.localeCompare("pencilminus") == 0 ) {
+										if( ExcData[i]["Selected"] == true ) {
+											ExcData[i]["Selected"] = false;
+											num_of_selected_items -= 1;
+										}
 									}
-									// scroll list to the first selected item 
-									if( num_of_selected_items == 1 ) {
-										Scroll_ItemsList( ExcData[i]["IdentifierUUID"] );
-									}
-								} else if( map.CanvasState.localeCompare("pencilminus") == 0 ) {
-									if( ExcData[i]["Selected"] == true ) {
-										ExcData[i]["Selected"] = false;
-										num_of_selected_items -= 1;
-									}
+									break;
 								}
-								break;
 							}
-						}
-						//// break again here if item has been selected
+							//// break again here if item has been selected
 						}
 					}
-				} catch( ex ) { }
+				} catch( ex ) { 
+					//console.log(">>>>> " + ex.toString()); 
+				}
 			}
 			updateInfoBar();
 			map.drawWorld();
@@ -890,6 +1051,19 @@ class Map {
 			// ############ Display stratigraphy ############
 			if( MouseIsDown ) {
 				Dialog.DisplayCrossSectionDialog( CrossSectionX1, CrossSectionY1, CrossSectionX2, CrossSectionY2 );
+			}
+		} else if( MouseIsDown && (MouseX!=MouseStartX && MouseY!=MouseStartY) && map.CanvasState.startsWith("alter_a_coordinate") ) {
+			// locate the selected item
+			var SelectedItem = ExcData[CoordinateAltering_SelectedItemIdx];
+			// alter the selected point's coordinates
+			if( CoordinateAltering_SelectedPointIdx >= 0 ) {
+				MouseX = eventX - map.canvas.getBoundingClientRect().left;
+				MouseY = eventY - map.canvas.getBoundingClientRect().top;
+				var map_x = map.map_range(MouseX-CanvasOffsetX,  0, PlanImageWidth  * ZoomFactor,  PlanMinX, PlanMaxX);
+				var map_y = map.map_range(MouseY-CanvasOffsetY,  0, PlanImageHeight * ZoomFactor,  PlanMaxY, PlanMinY);
+				SelectedItem["Location"][Current_Layer][CoordinateAltering_SelectedPointIdx]["X"] = map_x;
+				SelectedItem["Location"][Current_Layer][CoordinateAltering_SelectedPointIdx]["Y"] = map_y;
+				map.drawWorld();
 			}
 		}
 		MouseIsDown = false;
@@ -1023,10 +1197,72 @@ class Map {
 				map.drawWorld();
 			}
 		} else if( map.CanvasState.startsWith("crosssection") ) {
-			 if(e.key == 'Escape') {
+			if(e.key == 'Escape') {
 				CrossSectionX1 = CrossSectionY1 = CrossSectionX2 = CrossSectionY2 = -1;
 				map.drawWorld();
 			}
+		} else if( map.CanvasState.startsWith("alter_a_coordinate") ) {
+			if(e.key == 'Enter') { // save changes to the server
+				SaveItem( ExcData[CoordinateAltering_SelectedItemIdx], false );
+				CoordinateAltering_SelectedPointIdx = -1;
+				CoordinateAltering_SelectedItemData_Backup = null;
+			} else if(e.key == 'Escape') { // revert changes from local backup copy 
+				ExcData[CoordinateAltering_SelectedItemIdx]["Location"] = CoordinateAltering_SelectedItemData_Backup["Location"];
+				CoordinateAltering_SelectedItemIdx = -1;
+				CoordinateAltering_SelectedPointIdx = -1;
+				CoordinateAltering_SelectedItemData_Backup = null;
+				map.Deactivate_all_MapTools();
+			} else if(e.key == '+') { // add a new point
+				// #### the new point coordinates
+				var new_point_X = 0;
+				var new_point_Y = 0;
+				var new_point_Z = 0;
+				// #### if the selected item has no location information then add it
+				if( ExcData[CoordinateAltering_SelectedItemIdx].hasOwnProperty("Location")==false ) {
+					ExcData[CoordinateAltering_SelectedItemIdx]["Location"] = [];
+				}
+				// #### if the selected item has no location information for the currnet layer then add it
+				if( ExcData[CoordinateAltering_SelectedItemIdx]["Location"].length <= Current_Layer ) {
+					var num_of_layers_to_add = Current_Layer-ExcData[CoordinateAltering_SelectedItemIdx]["Location"].length+1;
+					for(let i=0; i<num_of_layers_to_add; i++){
+						ExcData[CoordinateAltering_SelectedItemIdx]["Location"].push( [] );
+					}
+				}
+				
+				// #### set the position of the new point as the average position of all the exiting points at the current layer. In case of no points then set it as the center of the map
+				if( ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer].length == 0 ) {
+					new_point_X = PlanMinX + Math.abs(PlanMaxX-PlanMinX)/2;
+					new_point_Y = PlanMinY + Math.abs(PlanMaxY-PlanMinY)/2;
+				} else {
+					for(let i=0; i<ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer].length; i++) {
+						new_point_X += ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer][i]["X"];
+						new_point_Y += ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer][i]["Y"];
+					}
+					new_point_X = new_point_X / ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer].length;
+					new_point_Y = new_point_Y / ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer].length;
+					new_point_Z = ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer][0]["Z"];
+				}
+				ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer].push( {"X":new_point_X, "Y":new_point_Y, "Z":new_point_Z} );
+				map.drawWorld();
+			} else if(e.key == '-') { // remove the selected point
+				if( CoordinateAltering_SelectedPointIdx < 0 ) {
+					alert("No point has been selected.");
+				} else {
+					ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer].splice(CoordinateAltering_SelectedPointIdx, 1);
+				}
+				map.drawWorld();
+			} else if(e.key == 'D' || e.key == 'd') { // set the depth (Z parameter) of the selected point
+				if( CoordinateAltering_SelectedPointIdx < 0 ) {
+					alert("No point has been selected.");
+				} else {
+					var point_Z = prompt("Set the point's depth in meters:", ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer][CoordinateAltering_SelectedPointIdx]["Z"]);
+					point_Z = parseFloat(point_Z)
+					if( ! isNaN(point_Z) ) {
+						ExcData[CoordinateAltering_SelectedItemIdx]["Location"][Current_Layer][CoordinateAltering_SelectedPointIdx]["Z"] = point_Z;
+					}
+				}
+			}
+			map.drawWorld();
 		}
 		////
 		if( map.ManualCoordinatesMode ) {
@@ -1042,9 +1278,8 @@ class Map {
 			} else if(e.key == 'Delete') { // clear
 				var ItemData = getDataBy_UUID( map.ItemUUID_forManualCoordinates );
 				delete ItemData["Location"];
-				delete ItemData["CoverageXYZ"];
 				// Save the coordinates to the server
-				SaveTrenchItem( ItemData, false );
+				SaveItem( ItemData, false );
 				// refresh state and visuals
 				map.ManualCoordinatesMode = false;
 				map.ItemUUID_forManualCoordinates = ""; 
@@ -1058,36 +1293,25 @@ class Map {
 				var min_depth = prompt("Please type the minimum depth in meters of the coordinates.\nThe program will calculate depths for all points automatically.");
 				var max_depth = prompt("Please type the maximum depth in meters of the coordinates.\nThe program will calculate depths for all points automatically.");
 				if( min_depth != null  &&  max_depth != null  &&  min_depth.length > 0  &&  max_depth.length > 0  ) { // user did not enter empty values to cancel the procedure
+					// locate the item for which the coordinates are manually set
+					var ItemData = getDataBy_UUID( map.ItemUUID_forManualCoordinates );
+					// alter the "Location" field of the item with the new coordinates
 					if( map.ManualCoordinates.length == 0 ) { // No points where defined
 						map.ManualCoordinates = [];
-					} else if( map.ManualCoordinates.length == 1 ) { // Add Depth information
-						map.ManualCoordinates[0]["Z"] = min_depth;
-					} else { // When several points then construct a 3D box according to the manually defined coordinates and the min and max depths
-						var lower_plain = [];
+					} else if( map.ManualCoordinates.length == 1 ) { // it is a point, add depth information to it
+						map.ManualCoordinates[0]["Z"] = parseFloat(min_depth);
+						ItemData["Location"] = [ map.ManualCoordinates ];
+					} else { // when several points then construct 2 polygons one with the min and the other with max depth.
+						var upper_polygon = [];
+						var lower_polygon = [];
 						for(var i=0; i<map.ManualCoordinates.length; i++ ) {
-							map.ManualCoordinates[i]["Z"] = min_depth;
-							lower_plain.push( {"X":map.ManualCoordinates[i]["X"], "Y":map.ManualCoordinates[i]["Y"], "Z":max_depth} );
+							upper_polygon.push( {"X":map.ManualCoordinates[i]["X"], "Y":map.ManualCoordinates[i]["Y"], "Z":parseFloat(min_depth)} );
+							lower_polygon.push( {"X":map.ManualCoordinates[i]["X"], "Y":map.ManualCoordinates[i]["Y"], "Z":parseFloat(max_depth)} );
 						}
-						map.ManualCoordinates = map.ManualCoordinates.concat( lower_plain );
+						ItemData["Location"] = [ upper_polygon, lower_polygon ];
 					}
-					// Save the coordinates into the item at field "Location"
-					var ItemData = getDataBy_UUID( map.ItemUUID_forManualCoordinates );
-					ItemData["Location"] = map.ManualCoordinates;
-					// Save the coordinates into the item at field "CoverageXYZ"
-					var s = "";
-					if( map.ManualCoordinates.length == 1 ) {
-						s += "GEOMETRYCOLLECTION(POINT Z(";
-					} else {
-						s += "GEOMETRYCOLLECTION(POLYGON Z(";
-					}
-					for(var i=0; i<map.ManualCoordinates.length; i++ ) {
-						if( i >= 1 ) s += ", ";
-						s += map.ManualCoordinates[i]["X"] + " " + map.ManualCoordinates[i]["Y"] + " " + map.ManualCoordinates[i]["Z"];
-					}
-					s += "))";
-					ItemData["CoverageXYZ"] = s;
 					// Save the coordinates to the server
-					SaveTrenchItem( ItemData, false );
+					SaveItem( ItemData, false );
 				}
 				// refresh state and visuals
 				map.ManualCoordinatesMode = false;
@@ -1103,7 +1327,7 @@ class Map {
 	
 
 	/** Event Handler: handles keyboard events for the canvas. */
-	Canvas_KeyUpHandler(e) {
+	Canvas_KeyUpHandler(e) {		
 		if( this.CtrlKeyIsDown ) {
 			this.CtrlKeyIsDown = false;
 		}
@@ -1126,17 +1350,19 @@ class Map {
 				// check if the current item will change selection status because of user's action - useful for not checking all items for Ray Casting
 				var checkThisItem = false;
 				try {
-					if( ExcData[i]["Location"].length > 0 ) {
+					if( ExcData[i]["Location"][Current_Layer].length > 0 ) {
 						if( (ExcData[i]["Selected"]==false && map.CanvasState.localeCompare("polygon")==0)  ||  (ExcData[i]["Selected"]==false && map.CanvasState.localeCompare("polygonplus")==0)  ||  (ExcData[i]["Selected"]==true && map.CanvasState.localeCompare("polygonminus")==0)) {
 							checkThisItem = true;
 						}
 					}
-				} catch (ex) { }
+				} catch (ex) { 
+					//console.log(">>>>>> " + ex.toString()); 
+				}
 				
 				// check if this item is displayed on the map or not
 				try {
 					var current_item_is_displayed_on_map = false;
-					if( ExcData[i]["Location"].length > 0 ) {
+					if( ExcData[i]["Location"][Current_Layer].length > 0 ) {
 						if( map.DisplayOnlySelectedItemsOnMap ) {
 							if( ExcData[i]["Selected"] ) current_item_is_displayed_on_map = true;
 						} else {
@@ -1147,13 +1373,15 @@ class Map {
 						}
 					}
 					if( current_item_is_displayed_on_map == false ) checkThisItem = false;
-				} catch (ex) { }
+				} catch (ex) { 
+					//console.log(">>>>>>> " + ex.toString()); 
+				}
 				
 				// check if current item falls inside polygon	
 				if( checkThisItem )	{
-					for(let pointIdx=0; pointIdx<ExcData[i]["Location"].length; pointIdx++) {
-						var x = ExcData[i]["Location"][pointIdx]["X"];
-						var y = ExcData[i]["Location"][pointIdx]["Y"];
+					for(let pointIdx=0; pointIdx<ExcData[i]["Location"][Current_Layer].length; pointIdx++) {
+						var x = ExcData[i]["Location"][Current_Layer][pointIdx]["X"];
+						var y = ExcData[i]["Location"][Current_Layer][pointIdx]["Y"];
 						x = map.map_range(x,  PlanMinX, PlanMaxX,                0,   PlanImageWidth) * ZoomFactor + CanvasOffsetX;
 						y = map.map_range(y,  PlanMinY, PlanMaxY,   PlanImageHeight,               0) * ZoomFactor + CanvasOffsetY;
 						if ( theRayCasting.isPointInsidePolygon(x, y) ) {
@@ -1325,6 +1553,15 @@ class Map {
 	/** This method is called when the measurements button is pressed and alters the map-state so that this tool works. */
 	ToggleDisplayOfDistances() {
 		this.DisplayDistances = ! this.DisplayDistances;
+		MouseX = -1;
+		MouseY = -1;
+		// when ruler is enabled then the user can click on a point and see its coordinates 
+		this.CanvasState = "displaydistances";
+		document.getElementById("canvas").style.cursor = "crosshair";
+		// display border around the clicked button
+		var CanvasButtons = document.getElementsByClassName("canvasBtn");
+		for(let i=0; i<CanvasButtons.length; i++) { CanvasButtons[i].style.boxShadow = ""; }
+		document.getElementById("ruler_button").style.boxShadow = "0px 0px 0px 2px  lightseagreen inset";	
 		this.drawWorld();
 	}
 	
@@ -1336,7 +1573,72 @@ class Map {
 		var CanvasButtons = document.getElementsByClassName("canvasBtn");
 		for(let i=0; i<CanvasButtons.length; i++) { CanvasButtons[i].style.boxShadow = ""; }
 		document.getElementById("target_button").style.boxShadow = "0px 0px 0px 2px  lightseagreen inset";
+		// update map
 		this.drawWorld();
 	}
+	
+	/** This method is called when the layers-button is clicked */
+	activate_SelectLayer() {
+		const btn = document.getElementById('layers_button');
+		const popover = document.getElementById('Layers_rangePopover');
+		// display the range pop-over
+		popover.style.display = 'inline';
+		// Position the popover directly under the button
+		const rect = btn.getBoundingClientRect();
+		popover.style.left = `${rect.left}px`;
+		popover.style.top = `${rect.bottom + window.scrollY}px`;
+		// update map
+		this.drawWorld();
+	}
+	
+	/** This method is called when the alter-a-coordinate-of-a-point is clicked */
+	activate_AlterCoordinate() {
+		// check if one and only one element is selected
+		var num_of_selected_items = 0;
+		if( ExcData != null ) {
+			for (let i = 0; i < ExcData.length; i++) { 
+				if( ExcData[i].hasOwnProperty("Selected") && ExcData[i]["Selected"] ) num_of_selected_items++;
+			}
+		}
+		if( num_of_selected_items != 1 ) {
+			alert("Currently there are " + num_of_selected_items + " items selected. There must be one and only one item selected, in order to alter the coordinates of one of its points." );
+		} else {
+			// locate the item which the user has selected
+			for (let i = 0; i < ExcData.length; i++) { 
+				if( ExcData[i].hasOwnProperty("Selected") && ExcData[i]["Selected"] ) { // the selected item was found
+					CoordinateAltering_SelectedItemIdx = i; // remember which point the user wants to move
+					break;
+				}
+			}
+			// remember the current coordinates (before altered by the user) when a new item is selected for coordinate-altering. The process ends with Enter (for saving) or Escape (for canceling)
+			if(CoordinateAltering_SelectedItemData_Backup==null || CoordinateAltering_SelectedItemData_Backup["IdentifierUUID"] != ExcData[CoordinateAltering_SelectedItemIdx]["IdentifierUUID"]) {
+				CoordinateAltering_SelectedItemData_Backup = JSON.parse(JSON.stringify( ExcData[CoordinateAltering_SelectedItemIdx] ));
+			}
+			// change state
+			this.CanvasState = "alter_a_coordinate";
+			document.getElementById("canvas").style.cursor = "move";
+			// display border around the clicked button
+			var CanvasButtons = document.getElementsByClassName("canvasBtn");
+			for(let i=0; i<CanvasButtons.length; i++) { CanvasButtons[i].style.boxShadow = ""; }
+			document.getElementById("alter_a_coordinate_button").style.boxShadow = "0px 0px 0px 2px  lightseagreen inset";	
+			// update map
+			this.drawWorld();
+			// focus on the map (canvas element)
+			this.canvas.focus();
+		}
+	}
+
+
+	/** This method is called when the layers-button is clicked */
+	Deactivate_all_MapTools() {
+		this.CanvasState = "";
+		document.getElementById("canvas").style.cursor = "default";
+		// display border around the clicked button
+		var CanvasButtons = document.getElementsByClassName("canvasBtn");
+		for(let i=0; i<CanvasButtons.length; i++) { CanvasButtons[i].style.boxShadow = ""; }
+		// update map
+		this.drawWorld();
+	}
+
 
 }
