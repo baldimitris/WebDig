@@ -12,6 +12,8 @@ var text_to_display = "";
 
 class Map {
 	
+	
+	
 	/**
 	 * Initializes the map object based on a html-canvas 
 	 * @arg canvas_html_id is the id of the canvas element at the html file.
@@ -47,14 +49,19 @@ class Map {
 		
 		/** The UUID of the item to be highlihted - usually the newly selected item */
 		this.Highlight_itemUUID = "";
-		/** The current transparency of the highlight animation */
+		/** The current opacity of the highlight animation */
 		this.currentHighlightAlpha = 1.0;
 		/** The interval id of the highlight animation */
 		this.Highlight_interval_ID;
 		
-		
 		/** The UUID of the item (or its locus, in case the item has no Location data) the information of which the user is currently displaying */
 		var Focused_itemUUID = "";
+		
+		/** Map Capture needs */
+		this.DotSize = 4;           // pixels
+		this.ColorBrightness = 0;   // the default value (zero) means that color depends on the item category. Positive means brighter, negative means darker
+		this.RectangleOpacity = 20; // 20% opacity means alpha channel=0.2 
+		this.AllItemsColor = "";    // default value "" means that the color depends on the item category
 		
 		// -------------- init
 		this.canvas = document.getElementById( canvas_html_id );
@@ -106,6 +113,14 @@ class Map {
 		
 	}
 
+
+	
+	setDotSize( n ) { this.DotSize = n; }
+	setColorBrightness( n ) { this.ColorBrightness = n; }
+	setRectangleOpacity( n ) { this.RectangleOpacity = n; }
+	setAllItemsColor( n ) { this.AllItemsColor = n; }
+	
+	
 	
 	/**
 	 * Returns the canvas html elemenet, on which the Map object draws
@@ -305,7 +320,19 @@ class Map {
 					if( display_current_item  &&  ExcData[i]["Location"].length > Current_Layer ) {
 						var LocationMatrix = ExcData[i]["Location"][Current_Layer];
 						// set type-related properties
-						var itemcolor = getItemColor( ExcData[i]["Type"], ExcData[i]["Category"] );
+						var itemcolor;
+						if( this.AllItemsColor.length ==  0 ) {
+							itemcolor = getItemColor( ExcData[i]["Type"], ExcData[i]["Category"] );
+							if( this.ColorBrightness != 0 ) { // change the Brightness of the default color
+								var tmp_canvas = document.createElement("canvas");
+								tmp_canvas.getContext("2d").fillStyle = itemcolor;
+								var rgb_string = tmp_canvas.getContext("2d").fillStyle;
+								tmp_canvas.remove();
+								itemcolor = Utils.AdjustBrightness( rgb_string, this.ColorBrightness );
+							}
+						} else {
+							itemcolor = this.AllItemsColor;
+						}
 						// draw
 						if( LocationMatrix.length == 1 ) { // it is just a point on the map
 							x = parseFloat( LocationMatrix[0]["X"] );
@@ -325,7 +352,7 @@ class Map {
 							this.context.beginPath();
 							map_x = this.map_range(x,  PlanMinX, PlanMaxX,   0   ,  PlanImageWidth) * ZoomFactor + CanvasOffsetX;
 							map_y = this.map_range(y,  PlanMinY, PlanMaxY,   PlanImageHeight,     0) * ZoomFactor + CanvasOffsetY; 
-							this.context.arc(map_x, map_y, 4, 0, 2*Math.PI);
+							this.context.arc(map_x, map_y, this.DotSize, 0, 2*Math.PI);
 							this.context.fill(); 
 							this.context.stroke(); 
 							this.num_of_drawables_OnCanvas++;
@@ -339,7 +366,7 @@ class Map {
 								this.context.globalAlpha = 0.20 + this.currentHighlightAlpha;
 								this.context.fillStyle = COLOR_highlight;
 							} else {
-								this.context.globalAlpha = 0.20;
+								this.context.globalAlpha = this.RectangleOpacity / 100;
 								this.context.fillStyle = itemcolor;
 							}
 							this.context.beginPath();

@@ -254,9 +254,6 @@ if( strcmp($Command, "GetExcavationData") == 0 ) { // --------------------------
 				$newData["DateCreated"]   = gmdate("Y-m-d") . " ". gmdate("H:i:s");
 				$newData["DateModified"]  = gmdate("Y-m-d") . " ". gmdate("H:i:s");
 				$newData["UpdatedByUser"] = $_SESSION["SESSION_USERNAME"];
-				// log the data insertion and save the new item
-				LogDataChange( $_SESSION["SESSION_USERNAME"], $newData["Identifier"], "New" );
-				array_push($ExcData, $newData);
 				// construct belongs-to relation by saving the relation to the parent item
 				$parent_item_idx = -1;
 				if ( isset($newData["RelationBelongsToUUID"])  &&  count($newData["RelationBelongsToUUID"])>0  &&  strlen($newData["RelationBelongsToUUID"][0])>0 ) {
@@ -272,6 +269,15 @@ if( strcmp($Command, "GetExcavationData") == 0 ) { // --------------------------
 						}
 					}
 				}
+				// in case the user has not declared the trench name, find it out from the belongs-to parent item
+				if ( isset($newData["Trench"])==false || strlen($newData["Trench"])==0 ) {
+					if( $parent_item_idx >= 0 ) {
+						$newData["Trench"] = $ExcData[$parent_item_idx]["Trench"];
+					}
+				}
+				// log the data insertion and save the new item
+				LogDataChange( $_SESSION["SESSION_USERNAME"], $newData["Identifier"], "New" );
+				array_push($ExcData, $newData);
 			}
 			// >>>>>>>> save data to the server's disk <<<<<<<<
 			$newJsonString = json_encode($ExcData, JSON_PRETTY_PRINT);
@@ -1484,7 +1490,6 @@ function TEST() {
 			}
 			unset( $ExcData[$i]["CoverageXYZ"] );
 		} else if( isset($ExcData[$i]["Location"]) ) { // ONLY FOR PROCESSED DATA
-			debug_print( "Only Location: " . $ExcData[$i]["Identifier"] . "\n" );
 			$ExcData[$i]["Location"] = [ $ExcData[$i]["Location"] ];
 		}
 	}
@@ -1531,10 +1536,10 @@ function Import_iDig_Images() {
 			}
 			// import images into the web app
 			rename( "Data/images_for_import/".$import_filenames[$i], "Data/images/".$import_filenames[$i] );
-			if( file_exists("Data/images/thumbnails/"+$import_filenames[$i]) == false ) {
+			if( file_exists("Data/images/thumbnails/".$import_filenames[$i]) == false ) {
 				CreateThumbnail("Data/images/".$import_filenames[$i],  "Data/images/thumbnails/", 200);
 			}
-			if( file_exists("Data/images/thumbnails_mini/"+$import_filenames[$i]) == false ) {
+			if( file_exists("Data/images/thumbnails_mini/".$import_filenames[$i]) == false ) {
 				CreateThumbnail("Data/images/".$import_filenames[$i],  "Data/images/thumbnails_mini/", 80);
 			}
 		} else {

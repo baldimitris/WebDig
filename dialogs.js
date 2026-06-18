@@ -128,7 +128,11 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 												}
 											}
 											// ************ Save it ************
+											document.getElementById("masterContainer").style.cursor = "wait";
+											document.getElementById("itemInfoDialog").style.cursor = "wait";
 											SaveItem(AlteredData);
+											document.getElementById("masterContainer").style.cursor = "pointer";
+											document.getElementById("itemInfoDialog").style.cursor = "pointer";
 											
 											// >>>> in case the altered item is a Locus then some fields of its child-items must be updated. The server does the same alterations on his side, as well.
 											if( AlteredData.hasOwnProperty("Type")  &&  AlteredData["Type"].localeCompare("Locus")==0  &&  AlteredData.hasOwnProperty("RelationIncludesUUID") ) {
@@ -586,19 +590,18 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 	static show_NewItem_Dialog() {
 		var DialogTitle = "";
 		DialogTitle = "New item"; 
-		var dialog_obj = $( "#itemInfoDialog" ).dialog(  
+		var dialog_obj = $( "#addNewItemDialog" ).dialog(  
 			{	height: 360,
 				width:  600,
 				title:  DialogTitle,
 				buttons: [
 					{ text: 'Close', id: 'itemInfoDialogCloseBtn', class: 'dialogCloseBtn',
 					  click: function () { 
-						$("#itemInfoDialog").dialog('close');
+						$("#addNewItemDialog").dialog('close');
 					  }
 					},
 					{ text: 'Save', id: 'iteminfodialogSaveBtn', class: 'dialogSaveBtn',
 					  click: function () { 
-						document.getElementById("masterContainer").style.cursor = "wait";
 						// ensure that the Identifier is unique at the client side
 						var new_Identifier = document.getElementById("NEW_Identifier").value;
 						if( DoesThisIdentifierExists( new_Identifier ) ) {
@@ -615,6 +618,8 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 							}
 						}
 						// ensure that the Identifier is unique at the server side
+						document.getElementById("masterContainer").style.cursor = "wait";
+						document.getElementById("addNewItemDialog").style.cursor = "wait";
 						$.ajax({                                      
 							url: phpURL,
 							type: "POST",
@@ -662,6 +667,7 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 								SaveItem(jsonData);
 							}
 							document.getElementById("masterContainer").style.cursor = "pointer";
+							document.getElementById("addNewItemDialog").style.cursor = "pointer";
 						});
 					  }
 					}				
@@ -672,7 +678,7 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 		dialog_obj.prev(".ui-dialog-titlebar").css("background", "black");
 		dialog_obj.prev(".ui-dialog-titlebar").css("color", "white");
 		//// scroll to the top
-		$("#itemInfoDialog").scrollTop("0"); 
+		$("#addNewItemDialog").scrollTop("0"); 
 		///// fill dialog contents with data
 		var s = ""; 
 		// ---------------- images row - begin ---------
@@ -718,7 +724,7 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 		s +=     "</datalist>";
 		s += "</div>";		
 		////
-		document.getElementById("itemInfoDialog").innerHTML = s; 
+		document.getElementById("addNewItemDialog").innerHTML = s; 
 		document.getElementById("NEW_Identifier").focus();
 		// add event listener at the NEW_Identifier field, to propose the next larger number 
 		document.getElementById("NEW_Identifier").addEventListener('keyup',this.IdentifierTextbox_ChangeHandler,false);
@@ -857,6 +863,47 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 		document.getElementById("MessageDialogContent").innerHTML = s; 
 		document.getElementById("MessageDialog").style.backgroundColor = "lightseagreen"; 
 	}
+
+
+	/**
+	 * Displays a dialog after the user clicks on the map-capture menu. It lets the user choose the size and colors of the items on the map.
+	 */
+	static ShowMapCaptureDialog() {
+		var dialog_obj = $( "#MessageDialog" ).dialog( 
+			{	height: 378, width:  562, title:  "Map Capture",
+				buttons: [ { text: 'Cancel', id: 'aboutdialogCloseBtn', class: 'dialogCloseBtn',
+								click: function () { $("#MessageDialog").dialog('close'); }
+						   },
+						   { text: 'Capture', id: 'aboutdialogOkBtn', class: 'dialogSaveBtn',
+								click: function () { 
+									if( document.getElementById("MapCaptureDialog_VariableColor_CheckBox").checked ) {
+										console.log( "CHECKED" );
+										CaptureMap( document.getElementById("MapCaptureDialog_size").value, document.getElementById("MapCaptureDialog_Brightness").value, document.getElementById("MapCaptureDialog_opacity").value, "" ); 
+									} else {
+										console.log( "NON-CHECKED " + document.getElementById("MapCaptureDialog_color").value );										
+										CaptureMap( document.getElementById("MapCaptureDialog_size").value, document.getElementById("MapCaptureDialog_Brightness").value, document.getElementById("MapCaptureDialog_opacity").value, document.getElementById("MapCaptureDialog_color").value ); 
+									}
+								}
+						   } ],
+				open: function(event, ui) { $( this ).siblings( ".ui-dialog-titlebar" ).find( "button" ).focus(); }
+			} 
+		);
+		dialog_obj.prev(".ui-dialog-titlebar").css("background", "teal");
+		dialog_obj.prev(".ui-dialog-titlebar").css("color", "white");
+		// create dialog content
+		var s = "";
+		s += "<h3>Map Capture Preferences</h3>";
+		s += "<table id='MapCaptureDialog_table'>";
+		s += "<tr><td>Dot Size</td>                <td><input type='range' min='1'    max='50'  value='4'  class='MapCaptureDialog_slider' id='MapCaptureDialog_size'       oninput='document.getElementById(\"MapCaptureDialog_size_value\").innerHTML = this.value+\" px\"'></td>    <td><div id='MapCaptureDialog_size_value'>4 px</div></td> </tr>";
+		s += "<tr><td>Color Brightness</td>        <td><input type='range' min='-200' max='200' value='0'  class='MapCaptureDialog_slider' id='MapCaptureDialog_Brightness' oninput='document.getElementById(\"MapCaptureDialog_Brightness_value\").innerHTML = this.value'></td>      <td><div id='MapCaptureDialog_Brightness_value'>default</div></td>  </tr>";
+		s += "<tr><td>Rectangle Opacity</td>       <td><input type='range' min='0'    max='100' value='20' class='MapCaptureDialog_slider' id='MapCaptureDialog_opacity'    oninput='document.getElementById(\"MapCaptureDialog_opacity_value\").innerHTML = this.value+\" %\"'></td>  <td><div id='MapCaptureDialog_opacity_value'>20 %</div></td></tr>";
+		s += "<tr><td>All Items Color</td>         <td><input type='color' disabled=true id='MapCaptureDialog_color' value='Whitesmoke'> <input type='checkbox' checked=true id='MapCaptureDialog_VariableColor_CheckBox' onchange='document.getElementById(\"MapCaptureDialog_color\").disabled=this.checked;'>Depends on item type</td>    <td></td> </tr>";
+		s += "</table>";
+		document.getElementById("MessageDialogContent").innerHTML = s; 
+		document.getElementById("MessageDialog").style.backgroundColor = "WhiteSmoke";
+	}
+
+
 
 	/**
 	 * Displays a dialog with information about the application and the people involved in the project.
@@ -1246,8 +1293,8 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 	 */
 	static ShowAdvancedSearchDialog() {
 		$( "#AdvancedSearchDialog" ).dialog(  
-			{	height: 600,
-				width:  720,
+			{	height: 626,
+				width:  600,
 				title:  "Advanced Search",
 				buttons: [
 					{ text: 'Search', id: 'searchdialogSaveBtn', class: 'dialogSaveBtn', 
@@ -1261,6 +1308,7 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 						var DescriptionCriterion_value	 		= document.getElementById("DescriptionCriterion").value.trim();
 						var IssueAuthorityCriterion_value		= document.getElementById("IssueAuthorityCriterion").value.trim();
 						var CoverageTemporalCriterion_value 	= document.getElementById("CoverageTemporalCriterion").value.trim();
+						var TypeCategoryCriterion_value 		= document.getElementById("TypeCategoryCriterion").value.trim();
 						// remember what the user has typed
 						Autofill["IdentifierCriterion"]   		= IdentifierCriterion_value;
 						Autofill["TitleCriterion"]        		= TitleCriterion_value;
@@ -1270,6 +1318,7 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 						Autofill["DescriptionCriterion"]  		= DescriptionCriterion_value;
 						Autofill["IssueAuthorityCriterion"]  	= IssueAuthorityCriterion_value;
 						Autofill["CoverageTemporalCriterion"]  	= CoverageTemporalCriterion_value;
+						Autofill["TypeCategoryCriterion"]  		= TypeCategoryCriterion_value;
 						//
 						PopulateItemsList_AccordingTo_AdvancedSearchCriteria();
 						//
@@ -1307,6 +1356,15 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 		for( let i=0; i<list_of_all_Sources.length; i++ ) s += "<option value='" + list_of_all_Sources[i] + "'>" + list_of_all_Sources[i] + "</option>";
 		s +=     "</datalist>";
 		s += "</div>";
+		//////// Type/Category Criterion
+		s += "<div style='grid-column:1;' class='AdvancedSearch_Label'>" + "<b>Type/Category:</b>" + "</div>";
+		s += "<div style='grid-column:2;'>";
+		s += 	 "<input type='text' id='" + "TypeCategoryCriterion" + "' class='AdvancedSearch_Text' name='" + "TypeCategoryCriterion" + "' list='" + "TypesCategories_list" + "'/>";
+		s += 	 "<datalist id='" + "TypesCategories_list" + "'>";
+		for( let i=0; i<list_of_all_Types.length; i++ ) s += "<option value='" + list_of_all_Types[i] + "'>" + list_of_all_Types[i] + "</option>";
+		for( let i=0; i<list_of_all_Categories.length; i++ ) s += "<option value='" + list_of_all_Categories[i] + "'>" + list_of_all_Categories[i] + "</option>";
+		s +=     "</datalist>";
+		s += "</div>";
 		//////// ArtifactDate Criterion
 		s += "<div style='grid-column:1;' class='AdvancedSearch_Label' title='The date of an object, as it would appear in a catalogue entry.'>" + "<b>ArtifactDate:</b>" + "</div>";
 		s += "<div style='grid-column:2;' >"  + "<input type='text' id='ArtifactDateCriterion' class='AdvancedSearch_Text'>" + "</div>";
@@ -1337,6 +1395,7 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 		if("DescriptionCriterion" in Autofill) 		document.getElementById("DescriptionCriterion").value  		= Autofill["DescriptionCriterion"];
 		if("IssueAuthorityCriterion" in Autofill) 	document.getElementById("IssueAuthorityCriterion").value  	= Autofill["IssueAuthorityCriterion"];
 		if("CoverageTemporalCriterion" in Autofill) document.getElementById("CoverageTemporalCriterion").value  = Autofill["CoverageTemporalCriterion"];
+		if("TypeCategoryCriterion" in Autofill) 	document.getElementById("TypeCategoryCriterion").value  	= Autofill["TypeCategoryCriterion"];
 		// add event listeners: when user hits the enter key, the dialog should execute the search
 		document.getElementById("IdentifierCriterion").addEventListener(      "keyup", function (e) { if(e.code=="Enter") { $("#searchdialogSaveBtn").click(); } });
 		document.getElementById("TitleCriterion").addEventListener(           "keyup", function (e) { if(e.code=="Enter") { $("#searchdialogSaveBtn").click(); } });
@@ -1346,6 +1405,7 @@ var WaitingForServer_FLAG = false; // useful for the 'GetMaxIdentifier' server r
 		document.getElementById("DescriptionCriterion").addEventListener(     "keyup", function (e) { if(e.code=="Enter") { $("#searchdialogSaveBtn").click(); } });
 		document.getElementById("IssueAuthorityCriterion").addEventListener(  "keyup", function (e) { if(e.code=="Enter") { $("#searchdialogSaveBtn").click(); } });
 		document.getElementById("CoverageTemporalCriterion").addEventListener("keyup", function (e) { if(e.code=="Enter") { $("#searchdialogSaveBtn").click(); } });
+		document.getElementById("TypeCategoryCriterion").addEventListener(    "keyup", function (e) { if(e.code=="Enter") { $("#searchdialogSaveBtn").click(); } });
 		//
 		document.getElementById("IdentifierCriterion").focus();
 	}

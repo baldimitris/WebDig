@@ -807,7 +807,7 @@ function ExportData_MSWORD() {
 function getDataChanges_and_DisplayThem() {
 	document.getElementById("masterContainer").style.cursor = "wait";
 	var Compress = true;
-	//////////////////////////// send request to server for the preferences file
+	////////////////////////////send request to server for the preferences file
 	$.ajax({                                      
 		url: phpURL,
 		type: "POST",
@@ -840,18 +840,26 @@ function getDataChanges_and_DisplayThem() {
 /**
   * captures a large size image of the whole map, even the non visible area.
   */
-function CaptureMap() {
+function CaptureMap( DotSize, ColorBrightness, RectangleOpacity, AllItemsColor ) {
 	// remember current canvas state
 	var Map_Canvas = document.getElementById("canvas");
-	var original_ZoomFactor = ZoomFactor;
+	var original_ZoomFactor    = ZoomFactor;
 	var original_CanvasOffsetX = CanvasOffsetX;
 	var original_CanvasOffsetY = CanvasOffsetY;
+	var original_CanvasWidth   = Map_Canvas.width;
+	var original_CanvasHeight  = Map_Canvas.height;
 	// instruct canvas to display the full-size map
-	Map_Canvas.style.width = PlanImageWidth + "px";
-	Map_Canvas.style.height = PlanImageHeight + "px";
 	ZoomFactor = 1;
-	CanvasOffsetX = 0;
-	CanvasOffsetY = 0;
+	CanvasOffsetX = original_CanvasOffsetX * (1/original_ZoomFactor);
+	CanvasOffsetY = original_CanvasOffsetY * (1/original_ZoomFactor);
+	Map_Canvas.style.width  = (original_CanvasWidth  * (1/original_ZoomFactor)) + "px";
+	Map_Canvas.style.height = (original_CanvasHeight * (1/original_ZoomFactor)) + "px";
+	// apply the user Preferences
+	map.setDotSize( DotSize );
+	map.setColorBrightness( ColorBrightness );
+	map.setRectangleOpacity( RectangleOpacity );
+	map.setAllItemsColor( AllItemsColor );
+	// draw all
 	map.drawWorld();
 	// open the canvas contents in a new tab
 	var map_image = Map_Canvas.toDataURL('image/png');
@@ -859,9 +867,15 @@ function CaptureMap() {
 	// revert to original canvas state
 	Map_Canvas.style.width = "100%";
 	Map_Canvas.style.height = "100%";
+	Map_Canvas.width  = original_CanvasWidth;
+	Map_Canvas.height = original_CanvasHeight;
 	ZoomFactor = original_ZoomFactor;
 	CanvasOffsetX = original_CanvasOffsetX;
 	CanvasOffsetY = original_CanvasOffsetY;
+	map.setDotSize( 4 );
+	map.setColorBrightness( 0 );
+	map.setRectangleOpacity( 20 );
+	map.setAllItemsColor( "" );
 	map.drawWorld();
 }
 
@@ -1091,10 +1105,10 @@ function updateInfoBar() {
 function updateSelectedItemsOnList() {
 	var listitems = document.getElementsByClassName("listitem");
 	for(let i=0; i<listitems.length; i++) {
-		let itemUUID = listitems[i].id.substr( listitems[i].id.indexOf("~")+1 );
+		let itemUUID = listitems[i].id.substr( listitems[i].id.indexOf("~")+1 ).trim();
 		var ItemData = getDataBy_UUID( itemUUID );
 		if( typeof ItemData == "undefined"  ) {
-			console.log("Attention: Undefined item was found with UUID: " + itemUUID);
+			//console.log("Attention: Undefined item was found with UUID: " + itemUUID); <<<<<<<<<
 			continue;
 		}
 		if( ItemData["Selected"] ) {
@@ -1199,17 +1213,18 @@ function PopulateItemsList_withOnlySelectedItems() {
 function PopulateItemsList_AccordingTo_AdvancedSearchCriteria() {
 	ItemList_wasPopulatedBy_AdvancedSearch = true; // remember this in order to call the function again after a saving action
 	//  get all search terms seperated by the OR character
-	var IdentifierCriteria, TitleCriteria, SourceCriteria, ArtifactDateCriteria, SquareCriteria, DescriptionCriteria, IssueAuthorityCriteria, CoverageTemporalCriteria;
+	var IdentifierCriteria, TitleCriteria, SourceCriteria, ArtifactDateCriteria, SquareCriteria, DescriptionCriteria, IssueAuthorityCriteria, CoverageTemporalCriteria, TypeCategoryCriteria;
 	if(Autofill["IdentifierCriterion"].length==0) 		IdentifierCriteria = []; 		else IdentifierCriteria 		= Autofill["IdentifierCriterion"].split("|");
 	if(Autofill["TitleCriterion"].length==0) 			TitleCriteria = []; 			else TitleCriteria 				= Autofill["TitleCriterion"].split("|");
-	if(Autofill["SourceCriterion"].length==0) 			SourceCriteria = []; 			else SourceCriteria 			= Autofill["SourceCriterion"].split("|");
+	if(Autofill["SourceCriterion"].length==0) 			SourceCriteria = []; 			else SourceCriteria 			= Autofill["SourceCriterion"].split("|");	
 	if(Autofill["ArtifactDateCriterion"].length==0)		ArtifactDateCriteria = []; 		else ArtifactDateCriteria 	 	= Autofill["ArtifactDateCriterion"].split("|");
 	if(Autofill["SquareCriterion"].length==0) 			SquareCriteria = []; 			else SquareCriteria 			= Autofill["SquareCriterion"].split("|");
 	if(Autofill["DescriptionCriterion"].length==0) 		DescriptionCriteria = []; 		else DescriptionCriteria 	 	= Autofill["DescriptionCriterion"].split("|");
 	if(Autofill["IssueAuthorityCriterion"].length==0) 	IssueAuthorityCriteria = []; 	else IssueAuthorityCriteria 	= Autofill["IssueAuthorityCriterion"].split("|");
 	if(Autofill["CoverageTemporalCriterion"].length==0)	CoverageTemporalCriteria = [];	else CoverageTemporalCriteria	= Autofill["CoverageTemporalCriterion"].split("|");
+	if(Autofill["TypeCategoryCriterion"].length==0) 	TypeCategoryCriteria = []; 		else TypeCategoryCriteria		= Autofill["TypeCategoryCriterion"].split("|");
 	// ---- For each item check if it fits all the advanced-search criteria
-	var c1, c2, c3, c4, c5, c6, c7, c8;
+	var c1, c2, c3, c4, c5, c6, c7, c8, c9;
 	$(itemsList_ul).empty();
 	num_of_items_in_list = 0;
 	var include_in_list = false;
@@ -1259,19 +1274,24 @@ function PopulateItemsList_AccordingTo_AdvancedSearchCriteria() {
 		for(let j=0; j<DescriptionCriteria.length; j++) {
 			if(DescriptionCriteria[j].length>0) c6 = c6 || Utils.WildcardSearch( ExcData[i]["Description"], DescriptionCriteria[j].trim() );
 		}
-		// **** check IssueAuthorityCriteria
-		if(Autofill["IssueAuthorityCriterion"].length==0) c8 = true; else c8 = false;
-		for(let j=0; j<IssueAuthorityCriteria.length; j++) {
-			if(IssueAuthorityCriteria[j].length>0) c8 = c8 || Utils.WildcardSearch( ExcData[i]["IssueAuthority"], IssueAuthorityCriteria[j].trim() );
-		}
-		
 		// **** check CoverageTemporalCriteria
 		if(Autofill["CoverageTemporalCriterion"].length==0) c7 = true; else c7 = false;
 		for(let j=0; j<CoverageTemporalCriteria.length; j++) {
 			if(CoverageTemporalCriteria[j].length>0) c7 = c7 || Utils.WildcardSearch( ExcData[i]["CoverageTemporal"], CoverageTemporalCriteria[j].trim() );
 		}
+		// **** check IssueAuthorityCriteria
+		if(Autofill["IssueAuthorityCriterion"].length==0) c8 = true; else c8 = false;
+		for(let j=0; j<IssueAuthorityCriteria.length; j++) {
+			if(IssueAuthorityCriteria[j].length>0) c8 = c8 || Utils.WildcardSearch( ExcData[i]["IssueAuthority"], IssueAuthorityCriteria[j].trim() );
+		}		
+		// **** check TypeCategoryCriteria
+		if(Autofill["TypeCategoryCriterion"].length==0) c9 = true; else c9 = false;
+		for(let j=0; j<TypeCategoryCriteria.length; j++) {
+			if(TypeCategoryCriteria[j].length>0) c9 = c9 || Utils.WildcardSearch(ExcData[i]["Type"], TypeCategoryCriteria[j].trim()) || Utils.WildcardSearch(ExcData[i]["Category"], TypeCategoryCriteria[j].trim());
+		}		
+		
 		// if all criteria are satisfied add the item into the list
-		include_in_list = c1 && c2 && c3 && c4 && c5 && c6 && c7 && c8;
+		include_in_list = c1 && c2 && c3 && c4 && c5 && c6 && c7 && c8 && c9;
 		if( include_in_list ) {
 			addInItemsList( ExcData[i] );
 		} else {

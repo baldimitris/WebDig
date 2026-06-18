@@ -301,7 +301,7 @@
 						<a href="javascript:void(0);" id="dropup_references"		onclick="Dialog.ShowReferenceLinksDialog();"		class='visible-to-users-only'>	<b>Reference Links</b></a>
 						<a href="javascript:void(0);" id="dropup_export" 			onclick="Dialog.ShowExportPreferencesDialog()"		class='visible-to-users-only'>	<b>Export data of selected items</b></a>
 						<a href="javascript:void(0);" id="dropup_trackchanges" 		onclick="getDataChanges_and_DisplayThem();"    		class='visible-to-admin-only'>	<b>Track Changes</b></a>
-						<a href="javascript:void(0);" id="dropup_mapcapture"	 	onclick="CaptureMap();"								class='visible-to-users-only'>  <b>Map Capture</b></a>
+						<a href="javascript:void(0);" id="dropup_mapcapture"	 	onclick="Dialog.ShowMapCaptureDialog();"			class='visible-to-users-only'>  <b>Map Capture</b></a>
 						</div>
 					</div>
 				</div>
@@ -336,6 +336,9 @@
 	</div>
 
 	<div id="itemInfoDialog" title="Item Info dialog">
+	</div>
+	
+	<div id="addNewItemDialog" title="Add new item dialog">
 	</div>
 	
 	<div id="AdvancedSearchDialog" title="Advanced Search Dialog">

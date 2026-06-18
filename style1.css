@@ -676,9 +676,20 @@ background-color: transparent;
 	margin-top: 2px;
 }
 
+
+#addNewItemDialog {
+	display: grid;
+	grid-template-columns: 28% auto;
+	gap: 6px;
+}
+
 #searchdialogSaveBtn:hover, #searchdialogCloseBtn:hover, #sortdialogSaveBtn:hover, #sortdialogCloseBtn:hover, #reflinksdialogSaveBtn:hover, #reflinksdialogCloseBtn:hover, #iteminfodialogPrevBtn:hover, #iteminfodialogNextBtn:hover, #iteminfodialogUpBtn:hover, #iteminfodialogDownBtn:hover,#iteminfodialogSaveBtn:hover { background-color: silver; }
 #searchdialogSaveBtn:focus, #searchdialogCloseBtn:focus, #sortdialogSaveBtn:focus, #sortdialogCloseBtn:focus, #reflinksdialogSaveBtn:focus, #reflinksdialogCloseBtn:focus, #iteminfodialogPrevBtn:focus, #iteminfodialogNextBtn:focus, #iteminfodialogUpBtn:focus, #iteminfodialogDownBtn:focus, #iteminfodialogSaveBtn:focus { background-color: transparent; }
 #searchdialogSaveBtn:active, #searchdialogCloseBtn:active, #sortdialogSaveBtn:active, #sortdialogCloseBtn:active, #reflinksdialogSaveBtn:active, #reflinksdialogCloseBtn:active, #iteminfodialogPrevBtn:active, #iteminfodialogUpBtn:active, #iteminfodialogDownBtn:active, #iteminfodialogNextBtn:active, #iteminfodialogSaveBtn:active { background-color: lightseagreen; }
+
+#MapCaptureDialog_table { border: none; }
+#MapCaptureDialog_table td { padding-top: 6px; padding-right: 2px; padding-bottom: 6px; padding-left: 2px; }
+.MapCaptureDialog_slider{ min-width: 244px; max-width: 244px; }
 
 #ReferenceLinksTable {
 	width:100%;

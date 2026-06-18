@@ -350,5 +350,36 @@ class Utils {
 		return Object.fromEntries( Object.entries(json_object).map(([key, value]) => [key.toLowerCase(), value]) );
 	}
 	
+
+	/**
+	  * lightens or darkens a color
+	  * @arg col the color as a hex string (example: "#9EFCFF") or rgb string (example: "rgb(158, 252, 255)")
+	  * @arg amt the amount of brightness to add or remove from the color (positive lightens the and negative darkens the color). This number is added to each of the r, g, b channels in proportion of the channels magnitude.
+	  * @ret a hex string representing the adjusted color
+	  */
+	static AdjustBrightness(col, amt) {
+		var r, g, b;
+		// retrieve r g b values from hex string
+		if( col.startsWith('#') ) {
+			let num = parseInt(col.replace("#", ""), 16);
+			r = (num >> 16);
+			g = ((num >> 8) & 0x00FF);
+			b = (num & 0x0000FF);
+		} else {
+			[r, g, b] = col.match(/\d+/g).map(Number);
+		}
+		// adjust brightness of each channel proportionally to its magnitude
+		r = r + Math.round(amt * r / 256);
+		g = g + Math.round(amt * g / 256);
+		b = b + Math.round(amt * b / 256);
+		// 
+		r = Math.max(Math.min(255, r), 0);
+		g = Math.max(Math.min(255, g), 0);
+		b = Math.max(Math.min(255, b), 0);
+		// make the result color a hex string
+		return "#" + (b | (g << 8) | (r << 16)).toString(16).padStart(6, "0");
+	}
+
+
 	
 }	
